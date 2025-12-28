@@ -3,31 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AI 心理督导大师系统</title>
+    <title>AI 心理督导大师</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* --- 1. 变量定义 --- */
+        /* --- 1. 变量定义 (已改回微信绿) --- */
         :root {
-            --primary: #6c5ce7; /* 督导用紫色系，更显专业冷静 */
+            --primary: #07C160; /* 微信绿 */
             --bg: #f2f2f2;
             --white: #ffffff;
             --text: #111;
             --text-sub: #888;
             --border: #e0e0e0;
-            --user-bg: #a29bfe; /* 用户气泡淡紫 */
+            --user-bg: #95ec69; /* 微信气泡浅绿 */
             --ai-bg: #ffffff;
             --sidebar-bg: #f7f7f7;
         }
 
         [data-theme="dark"] {
-            --primary: #6c5ce7;
+            --primary: #07C160;
             --bg: #111111;
             --white: #1e1e1e;
             --text: #e0e0e0;
             --text-sub: #aaa;
             --border: #333;
-            --user-bg: #4834d4;
+            --user-bg: #056a36;
             --ai-bg: #2c2c2c;
             --sidebar-bg: #1a1a1a;
         }
@@ -86,7 +86,8 @@
             word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; 
         }
         .message.ai .bubble { background: var(--ai-bg); border: 1px solid var(--border); }
-        .message.user .bubble { background: var(--user-bg); border: 1px solid transparent; color: #fff; }
+        .message.user .bubble { background: var(--user-bg); border: 1px solid transparent; color: #000; } /* 用户字色改回黑色 */
+        [data-theme="dark"] .message.user .bubble { color: #fff; }
         
         /* Markdown 样式 */
         .bubble p { margin: 0 0 10px 0; } .bubble p:last-child { margin: 0; }
@@ -204,7 +205,7 @@
         <div class="header-btn" onclick="toggleConfig()"><i class="fas fa-cog"></i></div>
     </div>
 
-    <!-- 督导配置面板 (核心修改) -->
+    <!-- 督导配置面板 -->
     <div class="config-panel" id="config-panel">
         <div class="form-group">
             <label>授权码 (Auth Code)</label>
@@ -283,7 +284,7 @@
 </div>
 
 <script>
-    const WORKER_URL = 'dudao.huaged.com'; 
+    const WORKER_URL = 'https://dudao.huaged.com'; 
     let currentConvId = "";
     let chatList = JSON.parse(localStorage.getItem('supervisor_chat_list')) || [];
 
@@ -346,7 +347,7 @@
             let userId = localStorage.getItem('dify_user_id');
             if (!userId) { userId = "user-" + Math.random().toString(36).substring(2, 15); localStorage.setItem('dify_user_id', userId); }
 
-            // 构造发给 Worker 的数据 (透传 Dify 所需变量)
+            // 构造发给 Worker 的数据
             const payload = {
                 "inputs": { 
                     "auth_code": auth,
