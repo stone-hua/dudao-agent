@@ -7,15 +7,15 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* --- 1. 变量定义 (微信绿配色) --- */
+        /* --- 1. 变量定义 (微信绿 + 夜间模式支持) --- */
         :root {
-            --primary: #07C160; /* 微信绿 */
+            --primary: #07C160;
             --bg: #f2f2f2;
             --white: #ffffff;
             --text: #111;
             --text-sub: #888;
             --border: #e0e0e0;
-            --user-bg: #95ec69; /* 微信气泡浅绿 */
+            --user-bg: #95ec69;
             --ai-bg: #ffffff;
             --sidebar-bg: #f7f7f7;
         }
@@ -37,7 +37,7 @@
         html, body {
             width: 100%; height: 100dvh;
             overflow: hidden;
-            background-color: #222;
+            background-color: #222; /* 网页深色底板 */
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex; justify-content: center;
         }
@@ -78,29 +78,50 @@
         .avatar { width: 38px; height: 38px; border-radius: 4px; background-size: cover; flex-shrink: 0; }
         .message.user .avatar { display: none; }
 
-        .bubble-content { max-width: 85%; display: flex; flex-direction: column; min-width: 0; }
+        .bubble-content { 
+            max-width: 85%; 
+            display: flex; flex-direction: column; 
+            min-width: 0; /* 关键：防止子元素撑开 */
+        }
         
+        /* 核心修复：气泡样式 & 强制换行 */
         .bubble {
             padding: 12px 16px; border-radius: 8px; font-size: 15px; line-height: 1.6;
             position: relative; color: var(--text);
-            word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; 
+            /* 强制换行三件套，解决左右滑动问题 */
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word; 
         }
         .message.ai .bubble { background: var(--ai-bg); border: 1px solid var(--border); }
-        .message.user .bubble { background: var(--user-bg); border: 1px solid transparent; color: #000; } 
+        .message.user .bubble { background: var(--user-bg); border: 1px solid transparent; color: #000; }
         [data-theme="dark"] .message.user .bubble { color: #fff; }
-        
-        /* Markdown 样式 */
+
+        /* Markdown 样式优化 */
         .bubble p { margin: 0 0 10px 0; } .bubble p:last-child { margin: 0; }
         .bubble ul, .bubble ol { margin: 5px 0 10px 20px; padding: 0; } 
-        .bubble strong { font-weight: 600; }
-        
-        /* Markdown 代码块/表格修复 */
+        .bubble strong { font-weight: 600; } 
+
+        /* 关键优化：代码块自动换行，不再左右滑动 */
         .bubble pre {
-            white-space: pre-wrap; word-wrap: break-word;
-            background: rgba(0,0,0,0.05); padding: 10px; border-radius: 4px;
-            margin: 10px 0; font-family: monospace; font-size: 13px;
+            white-space: pre-wrap; /* 允许代码块换行 */
+            word-wrap: break-word;
+            background: rgba(0,0,0,0.05);
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 13px;
+            border: 1px solid rgba(0,0,0,0.1);
         }
-        .bubble code { font-family: monospace; background: rgba(0,0,0,0.05); padding: 2px 4px; border-radius: 3px; font-size: 0.9em; }
+        .bubble code {
+            font-family: monospace;
+            background: rgba(0,0,0,0.05);
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-size: 0.9em;
+            word-break: break-all; /* 长单词强制换行 */
+        }
 
         .actions { display: flex; gap: 15px; margin-top: 5px; padding-left: 2px; font-size: 12px; color: var(--text-sub); }
         .message.user .actions { display: none; }
@@ -144,7 +165,6 @@
         .sidebar.show { transform: translateX(0); opacity: 1; }
         .sidebar-header { padding: 20px; border-bottom: 1px solid var(--border); }
         
-        /* 侧边栏按钮 */
         .btn-new-chat {
             display: flex; align-items: center; justify-content: center; gap: 8px;
             width: 100%; padding: 10px; margin-bottom: 10px;
@@ -163,7 +183,16 @@
             display: flex; justify-content: space-between; align-items: center; cursor: pointer;
         }
         .history-item.active { color: var(--primary); font-weight: bold; }
+        
+        /* 侧边栏底部布局优化 */
         .sidebar-footer { padding: 20px; border-top: 1px solid var(--border); color: var(--text-sub); font-size: 12px; }
+        .footer-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        
+        /* 清空缓存按钮居中样式 */
+        .clear-cache-row { 
+            display: flex; justify-content: center; align-items: center; 
+            margin-bottom: 10px; cursor: pointer; text-decoration: underline; 
+        }
 
         /* --- 7. 设置面板 (督导专属) --- */
         .config-panel {
@@ -205,7 +234,7 @@
         <div class="header-btn" onclick="toggleConfig()"><i class="fas fa-cog"></i></div>
     </div>
 
-    <!-- 督导配置面板 -->
+    <!-- 督导配置面板 (保持督导逻辑) -->
     <div class="config-panel" id="config-panel">
         <div class="form-group">
             <label>授权码 (Auth Code)</label>
@@ -221,16 +250,16 @@
         </div>
         <div class="form-group">
             <label>督导大师风格 (如：弗洛伊德)</label>
-            <input type="text" id="master_style" class="form-control" placeholder="请输入大师名字">
+            <input type="text" id="master_style" class="form-control" placeholder="请输入希望模仿的大师">
         </div>
         <div class="form-group">
-            <label>你的从业时长 (小时)</label>
+            <label>从业时长 (小时)</label>
             <input type="number" id="hours" class="form-control" placeholder="例如：500">
         </div>
         <button class="btn-confirm" onclick="confirmConfig()">保存设置，开始督导</button>
     </div>
 
-    <!-- 侧边栏 -->
+    <!-- 侧边栏 (集成夜间模式 & 居中清空) -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <button class="btn-new-chat" onclick="startNewChat()">
@@ -242,7 +271,13 @@
         </div>
         <div class="history-list" id="history-list"></div>
         <div class="sidebar-footer">
-            <div class="footer-row" onclick="clearCache()" style="cursor:pointer; justify-content:center; text-decoration:underline;">
+            <!-- 夜间模式开关 -->
+            <div class="footer-row">
+                <span>夜间模式</span>
+                <i class="fas fa-moon" style="cursor:pointer; font-size:18px;" onclick="toggleTheme()"></i>
+            </div>
+            <!-- 清空缓存居中 -->
+            <div class="clear-cache-row" onclick="clearCache()">
                 清空所有缓存
             </div>
             <div style="text-align:center; margin-top:10px;">
@@ -265,7 +300,7 @@
     </div>
 
     <div class="footer">
-        <textarea id="user_input" class="input-box" placeholder="粘贴个案逐字稿 (限15000字以内)..." rows="1" style="height: 40px;" maxlength="15000"></textarea>
+        <textarea id="user_input" class="input-box" placeholder="粘贴个案逐字稿 (限2万字以内)..." rows="1" style="height: 40px;" maxlength="20000"></textarea>
         <div class="send-btn" id="send_btn" onclick="sendMessage()">
             <i class="fas fa-paper-plane"></i>
         </div>
@@ -277,23 +312,25 @@
         <span class="close-modal" onclick="closeModal('help-modal')">&times;</span>
         <h3>📚 督导助手使用指南</h3>
         <br>
-        <p><strong>1. 身份设定</strong><br>在设置中填入您的流派和希望模仿的大师（如比昂、温尼科特），AI将切换该视角。</p>
-        <p><strong>2. 绑定鉴权</strong><br>输入授权码和手机号，系统将自动绑定设备与次数。</p>
-        <p><strong>3. 发送案例</strong><br>直接在对话框粘贴脱敏后的逐字稿，AI将从专业解析、情感支持、技术建议三个维度反馈。</p>
+        <p><strong>1. 身份设定</strong><br>在设置中填入您的流派和希望模仿的大师，AI将切换视角。</p>
+        <p><strong>2. 绑定鉴权</strong><br>输入授权码和手机号，系统自动验证有效期和次数。</p>
+        <p><strong>3. 发送案例</strong><br>直接粘贴逐字稿，获取专业分析。</p>
     </div>
 </div>
 
 <script>
+    // 已内置您的 Cloudflare 域名
     const WORKER_URL = 'https://dudao.huaged.com'; 
     let currentConvId = "";
     let chatList = JSON.parse(localStorage.getItem('supervisor_chat_list')) || [];
+    let isDark = localStorage.getItem('theme') === 'dark';
 
     document.addEventListener('DOMContentLoaded', () => {
         loadConfig();
+        applyTheme(); // 应用夜间模式
         renderHistory();
         if (chatList.length > 0) loadChat(chatList[0].id);
         
-        // 输入框自适应
         const input = document.getElementById('user_input');
         input.addEventListener('input', function() {
             this.style.height = 'auto'; 
@@ -317,18 +354,24 @@
         const phone = document.getElementById('phone_number').value.trim();
         if (!auth || !phone) { alert("请完善授权码和手机号！"); return; }
         saveConfig();
-        closeAll();
-        // 弹窗已移除
+        closeAll(); // 收起面板
     }
 
     function showModal(id) { document.getElementById(id).style.display = 'flex'; closeAll(); }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
+    // 夜间模式逻辑 (移植自销冠)
+    function toggleTheme() {
+        isDark = !isDark;
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        applyTheme();
+    }
+    function applyTheme() { document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light'); }
+
     async function sendMessage() {
         const input = document.getElementById('user_input');
         const text = input.value.trim();
         
-        // 获取配置参数
         const auth = document.getElementById('auth_code').value.trim();
         const phone = document.getElementById('phone_number').value.trim();
         const school = document.getElementById('school').value.trim();
@@ -347,7 +390,6 @@
             let userId = localStorage.getItem('dify_user_id');
             if (!userId) { userId = "user-" + Math.random().toString(36).substring(2, 15); localStorage.setItem('dify_user_id', userId); }
 
-            // 构造发给 Worker 的数据
             const payload = {
                 "inputs": { 
                     "auth_code": auth,
@@ -395,7 +437,18 @@
         const avatar = role === 'ai' ? `<div class="avatar" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3135/3135715.png');"></div>` : '';
         const htmlText = marked.parse(text || "");
 
-        div.innerHTML = `${avatar}<div class="bubble-content"><div class="bubble">${htmlText}</div></div>`;
+        // 增加 actions 按钮 (复制/点赞)
+        let actions = '';
+        if (role === 'ai' && msgId) {
+            actions = `
+                <div class="actions">
+                    <span class="act-btn" onclick="copyText(this, '${text.replace(/'/g, "\\'").replace(/\n/g, "\\n")}')"><i class="fas fa-copy"></i> 复制</span>
+                    <span class="act-btn" onclick="feedback('${msgId}', 'like', this)"><i class="fas fa-thumbs-up"></i></span>
+                    <span class="act-btn" onclick="feedback('${msgId}', 'dislike', this)"><i class="fas fa-thumbs-down"></i></span>
+                </div>`;
+        }
+
+        div.innerHTML = `${avatar}<div class="bubble-content"><div class="bubble">${htmlText}</div>${actions}</div>`;
         box.appendChild(div);
         box.scrollTop = box.scrollHeight;
     }
@@ -465,8 +518,33 @@
     function clearCache() {
         if(confirm("确定清空所有记录？")) { localStorage.clear(); location.reload(); }
     }
+    
+    function copyText(btn, text) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try { document.execCommand('copy'); btn.innerHTML = '<i class="fas fa-check"></i> 已复制'; setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i> 复制', 2000); } catch (err) {}
+        document.body.removeChild(textArea);
+    }
+    
+    async function feedback(msgId, rating, btn) {
+        const parent = btn.parentElement;
+        parent.querySelectorAll('.act-btn').forEach(b => b.style.color = '');
+        btn.style.color = '#07C160';
+        try {
+            let userId = localStorage.getItem('dify_user_id');
+            await fetch(`${WORKER_URL}`, { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: 'feedback', message_id: msgId, rating: rating, user: userId })
+            });
+        } catch(e) {}
+    }
 </script>
 
 </body>
 </html>
-
