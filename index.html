@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AI心理督导大师</title>
+    <title>AI 心理督导大师</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -94,7 +94,7 @@
             word-break: break-word; 
         }
         
-        /* ★★★ 这里就是解决手机端灰色方块的关键代码 ★★★ */
+        /* 隐藏空内容气泡 (修复手机端灰色方块) */
         .bubble:empty { display: none; } 
 
         .message.ai .bubble { background: var(--ai-bg); border: 1px solid var(--border); }
@@ -342,6 +342,7 @@
     </div>
 </div>
 
+<!-- 这里的文案已完全替换为你提供的版本 -->
 <div class="modal" id="help-modal">
     <div class="modal-content">
         <span class="close-modal" onclick="closeModal('help-modal')">&times;</span>
@@ -351,7 +352,6 @@
         <p><strong>2. 绑定鉴权</strong><br>输入授权码和手机号，系统自动验证有效期和次数。</p>
         <p><strong>3. 发送案例</strong><br>粘贴逐字稿，错别字也不影响，30秒即可获取专业分析。</p>
         <p><strong>4. 多轮沟通</strong><br>给出分析后，可以补充信息，和AI督导进行多轮沟通。</p>
-
     </div>
 </div>
 
@@ -536,9 +536,44 @@
         closeAll();
     }
 
+    // --- 核心修复：渲染历史记录时添加按钮 ---
     function renderHistory() {
         const list = document.getElementById('history-list');
-        list.innerHTML = chatList.map(c => `<div class="history-item ${c.id === currentConvId ? 'active' : ''}" onclick="loadChat('${c.id}')"><span>${c.title}</span></div>`).join('');
+        list.innerHTML = chatList.map(c => `
+            <div class="history-item ${c.id === currentConvId ? 'active' : ''}" onclick="loadChat('${c.id}')">
+                <span>${c.title}</span>
+                <div class="history-actions">
+                    <i class="fas fa-pen" onclick="renameChat('${c.id}', event)"></i>
+                    <i class="fas fa-trash" onclick="deleteChat('${c.id}', event)"></i>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // --- 新增：重命名功能 ---
+    function renameChat(id, e) {
+        e.stopPropagation();
+        const newName = prompt("请输入新的对话名称：");
+        if (newName) {
+            const chat = chatList.find(c => c.id === id);
+            if (chat) {
+                chat.title = newName;
+                localStorage.setItem('supervisor_chat_list', JSON.stringify(chatList));
+                renderHistory();
+                if (currentConvId === id) document.getElementById('header-title').innerText = newName;
+            }
+        }
+    }
+
+    // --- 新增：删除功能 ---
+    function deleteChat(id, e) {
+        e.stopPropagation();
+        if(!confirm("确定要删除此对话吗？")) return;
+        chatList = chatList.filter(c => c.id !== id);
+        localStorage.setItem('supervisor_chat_list', JSON.stringify(chatList));
+        localStorage.removeItem(`sup_msg_${id}`);
+        renderHistory();
+        if(currentConvId === id) startNewChat();
     }
 
     function saveMsg(id, role, content, msgId) {
@@ -593,5 +628,3 @@
 
 </body>
 </html>
-
-
