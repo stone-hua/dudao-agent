@@ -7,7 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* --- 1. 变量定义 (已改回微信绿) --- */
+        /* --- 1. 变量定义 (微信绿配色) --- */
         :root {
             --primary: #07C160; /* 微信绿 */
             --bg: #f2f2f2;
@@ -86,7 +86,7 @@
             word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; 
         }
         .message.ai .bubble { background: var(--ai-bg); border: 1px solid var(--border); }
-        .message.user .bubble { background: var(--user-bg); border: 1px solid transparent; color: #000; } /* 用户字色改回黑色 */
+        .message.user .bubble { background: var(--user-bg); border: 1px solid transparent; color: #000; } 
         [data-theme="dark"] .message.user .bubble { color: #fff; }
         
         /* Markdown 样式 */
@@ -318,7 +318,7 @@
         if (!auth || !phone) { alert("请完善授权码和手机号！"); return; }
         saveConfig();
         closeAll();
-        alert("设置已保存，请开始发送案例。");
+        // 弹窗已移除
     }
 
     function showModal(id) { document.getElementById(id).style.display = 'flex'; closeAll(); }
@@ -469,5 +469,3 @@
 
 </body>
 </html>
-
-
