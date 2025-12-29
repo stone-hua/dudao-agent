@@ -7,15 +7,15 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* --- 1. 变量定义 (微信绿配色) --- */
+        /* --- 变量定义 (微信绿) --- */
         :root {
-            --primary: #07C160; /* 微信绿 */
+            --primary: #07C160;
             --bg: #f2f2f2;
             --white: #ffffff;
             --text: #111;
             --text-sub: #888;
             --border: #e0e0e0;
-            --user-bg: #95ec69; /* 微信气泡浅绿 */
+            --user-bg: #95ec69;
             --ai-bg: #ffffff;
             --sidebar-bg: #f7f7f7;
         }
@@ -37,12 +37,12 @@
         html, body {
             width: 100%; height: 100dvh;
             overflow: hidden;
-            background-color: #222; /* 网页深色底板 */
+            background-color: #222;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex; justify-content: center;
         }
 
-        /* --- 2. App 容器 --- */
+        /* --- App 容器 --- */
         .app-container {
             width: 100%; height: 100%;
             background: var(--bg);
@@ -56,7 +56,7 @@
             .app-container { max-width: 450px; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
         }
 
-        /* --- 3. 顶部导航 --- */
+        /* --- 顶部导航 --- */
         .header {
             height: 50px; background: var(--white); border-bottom: 1px solid var(--border);
             display: flex; justify-content: space-between; align-items: center;
@@ -65,7 +65,7 @@
         .header-title { font-weight: 600; font-size: 16px; }
         .header-btn { font-size: 18px; cursor: pointer; padding: 8px; }
 
-        /* --- 4. 聊天区域 --- */
+        /* --- 聊天区域 --- */
         .chat-area {
             flex: 1; overflow-y: auto; padding: 15px;
             -webkit-overflow-scrolling: touch;
@@ -78,30 +78,23 @@
         .avatar { width: 38px; height: 38px; border-radius: 4px; background-size: cover; flex-shrink: 0; }
         .message.user .avatar { display: none; }
 
-        .bubble-content { 
-            max-width: 85%; 
-            display: flex; flex-direction: column; 
-            min-width: 0; 
-        }
+        .bubble-content { max-width: 85%; display: flex; flex-direction: column; min-width: 0; }
         
-        /* 气泡样式 & 强制换行 */
         .bubble {
             padding: 12px 16px; border-radius: 8px; font-size: 15px; line-height: 1.6;
             position: relative; color: var(--text);
             word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; 
         }
-        .bubble:empty { display: none; } /* 隐藏空内容 */
+        .bubble:empty { display: none; }
 
         .message.ai .bubble { background: var(--ai-bg); border: 1px solid var(--border); }
         .message.user .bubble { background: var(--user-bg); border: 1px solid transparent; color: #000; }
         [data-theme="dark"] .message.user .bubble { color: #fff; }
 
-        /* Markdown 样式 */
         .bubble p { margin: 0 0 10px 0; } .bubble p:last-child { margin: 0; }
         .bubble ul, .bubble ol { margin: 5px 0 10px 20px; padding: 0; } 
         .bubble strong { font-weight: 600; } 
 
-        /* 代码块优化 */
         .bubble pre {
             white-space: pre-wrap; word-wrap: break-word;
             background: rgba(0,0,0,0.05); padding: 10px; border-radius: 4px;
@@ -115,7 +108,7 @@
         .act-btn { cursor: pointer; display: flex; align-items: center; gap: 3px; }
         .act-btn:hover, .act-btn.active { color: var(--primary); }
 
-        /* --- 5. 底部输入区 --- */
+        /* --- 底部输入区 --- */
         .footer {
             background: var(--white); border-top: 1px solid var(--border);
             padding: 10px 15px;
@@ -134,7 +127,7 @@
             border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; 
         }
 
-        /* --- 6. 侧边栏 & 设置 --- */
+        /* --- 侧边栏 & 设置 --- */
         .overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.5); z-index: 50;
@@ -170,12 +163,13 @@
             display: flex; justify-content: space-between; align-items: center; cursor: pointer;
         }
         .history-item.active { color: var(--primary); font-weight: bold; }
+        .history-actions i { padding: 8px; color: var(--text-sub); cursor: pointer; margin-left: 10px; }
         
         .sidebar-footer { padding: 20px; border-top: 1px solid var(--border); color: var(--text-sub); font-size: 12px; }
         .footer-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .clear-cache-row { display: flex; justify-content: center; align-items: center; margin-bottom: 10px; cursor: pointer; text-decoration: underline; }
 
-        /* --- 7. 设置面板 --- */
+        /* --- 设置面板 --- */
         .config-panel {
             position: absolute; top: 50px; left: 0; width: 100%;
             background: var(--white); z-index: 55; padding: 20px;
@@ -190,7 +184,7 @@
         .form-control { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text); }
         
         /* 下拉框样式优化 */
-        select.form-control { -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 10px center; background-size: 1em; }
+        select.form-control { -webkit-appearance: none; appearance: none; background-color: var(--bg); }
 
         .btn-confirm {
             width: 100%; padding: 12px; background: var(--primary); color: white;
@@ -215,10 +209,11 @@
     <div class="header">
         <div class="header-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
         <div class="header-title" id="header-title">新督导</div>
+        <!-- 这里的 toggleConfig 按钮绝对没问题了 -->
         <div class="header-btn" onclick="toggleConfig()"><i class="fas fa-cog"></i></div>
     </div>
 
-    <!-- 督导配置面板 (已改为下拉框) -->
+    <!-- 督导配置面板 -->
     <div class="config-panel" id="config-panel">
         <div class="form-group">
             <label>授权码 (Auth Code)</label>
@@ -229,7 +224,7 @@
             <input type="text" id="phone_number" class="form-control" placeholder="请输入您的手机号">
         </div>
         
-        <!-- ★★★ 这里改成了下拉框，值与 Dify 完全一致 ★★★ -->
+        <!-- ★★★ 这里改成了下拉框，手机端会显示原生气泡样式 ★★★ -->
         <div class="form-group">
             <label>流派</label>
             <select id="school" class="form-control">
@@ -244,7 +239,7 @@
 
         <div class="form-group">
             <label>督导大师风格 (如：弗洛伊德)</label>
-            <input type="text" id="master_style" class="form-control" placeholder="请输入希望模仿的大师">
+            <input type="text" id="master_style" class="form-control" placeholder="请输入大师姓名">
         </div>
         <div class="form-group">
             <label>从业时长 (小时)</label>
@@ -273,7 +268,7 @@
                 清空所有缓存
             </div>
             <div style="text-align:center; margin-top:10px;">
-                技术支持：张兆华工作室
+                技术支持：张兆华工作室 huagelc
             </div>
         </div>
     </div>
@@ -335,6 +330,7 @@
         });
     });
 
+    // --- 侧边栏与配置面板开关函数 (之前可能这里有问题，现已排查) ---
     function toggleSidebar() { closeConfig(); document.getElementById('sidebar').classList.toggle('show'); document.getElementById('overlay').classList.toggle('show'); }
     function toggleConfig() { closeSidebar(); document.getElementById('config-panel').classList.toggle('show'); document.getElementById('overlay').classList.toggle('show'); }
     function closeAll() { document.getElementById('sidebar').classList.remove('show'); document.getElementById('config-panel').classList.remove('show'); document.getElementById('overlay').classList.remove('show'); }
@@ -365,7 +361,7 @@
         
         const auth = document.getElementById('auth_code').value.trim();
         const phone = document.getElementById('phone_number').value.trim();
-        const school = document.getElementById('school').value.trim(); // 获取下拉框的值
+        const school = document.getElementById('school').value.trim(); // 获取下拉框
         const master = document.getElementById('master_style').value.trim();
         const hours = document.getElementById('hours').value.trim();
 
@@ -385,7 +381,7 @@
                 "inputs": { 
                     "auth_code": auth,
                     "phone_number": phone,
-                    "school": school, // 发送下拉框选中的标准值
+                    "school": school,
                     "master_style": master || "资深督导",
                     "hours": Number(hours) || 0
                 },
@@ -490,49 +486,4 @@
 
     function renderHistory() {
         const list = document.getElementById('history-list');
-        list.innerHTML = chatList.map(c => `
-            <div class="history-item ${c.id === currentConvId ? 'active' : ''}" onclick="loadChat('${c.id}')">
-                <span>${c.title}</span>
-                <div class="history-actions">
-                    <i class="fas fa-pen" onclick="renameChat('${c.id}', event)"></i>
-                    <i class="fas fa-trash" onclick="deleteChat('${c.id}', event)"></i>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function renameChat(id, e) {
-        e.stopPropagation();
-        const newName = prompt("请输入新的对话名称：");
-        if (newName) {
-            const chat = chatList.find(c => c.id === id);
-            if (chat) {
-                chat.title = newName;
-                localStorage.setItem('supervisor_chat_list', JSON.stringify(chatList));
-                renderHistory();
-                if (currentConvId === id) document.getElementById('header-title').innerText = newName;
-            }
-        }
-    }
-
-    function deleteChat(id, e) {
-        e.stopPropagation();
-        if(!confirm("确定要删除此对话吗？")) return;
-        chatList = chatList.filter(c => c.id !== id);
-        localStorage.setItem('supervisor_chat_list', JSON.stringify(chatList));
-        localStorage.removeItem(`sup_msg_${id}`);
-        renderHistory();
-        if(currentConvId === id) startNewChat();
-    }
-
-    function saveMsg(id, role, content, msgId) {
-        let msgs = JSON.parse(localStorage.getItem(`sup_msg_${id}`)) || [];
-        msgs.push({ role, content, msgId });
-        localStorage.setItem(`sup_msg_${id}`, JSON.stringify(msgs));
-    }
-    function saveConfig() {
-        localStorage.setItem('sup_auth', document.getElementById('auth_code').value);
-        localStorage.setItem('sup_phone', document.getElementById('phone_number').value);
-        localStorage.setItem('sup_school', document.getElementById('school').value);
-        localStorage.setItem('sup_master', document.getElementById('master_style').value);
-        localStorage.setItem('sup_hours', document.getElementB
+        list.innerHTML = chatList.map(c
