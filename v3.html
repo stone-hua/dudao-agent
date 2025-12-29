@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AI心理督导大师</title>
+    <title>AI 心理督导大师</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -82,6 +82,7 @@
 
         .bubble-content { max-width: 85%; display: flex; flex-direction: column; min-width: 0; }
         
+        /* 气泡样式 */
         .bubble {
             padding: 12px 16px; border-radius: 8px; font-size: 15px; line-height: 1.6;
             position: relative; color: var(--text);
@@ -111,7 +112,9 @@
         }
         .bubble code { font-family: monospace; background: rgba(0,0,0,0.05); padding: 2px 4px; border-radius: 3px; font-size: 0.9em; word-break: break-all; }
 
-        .actions { display: flex; gap: 15px; margin-top: 5px; padding-left: 2px; font-size: 12px; color: var(--text-sub); }
+        /* 操作按钮样式 (已恢复点赞/点踩) */
+        .actions { display: flex; gap: 15px; margin-top: 5px; padding-left: 2px; font-size: 12px; color: var(--text-sub); opacity: 0; transition: opacity 0.3s; }
+        .actions.show { opacity: 1; } /* 打字完成后显示 */
         .message.user .actions { display: none; }
         .act-btn { cursor: pointer; display: flex; align-items: center; gap: 3px; }
         .act-btn:hover, .act-btn.active { color: var(--primary); }
@@ -219,7 +222,7 @@
         <div class="header-btn" onclick="toggleConfig()"><i class="fas fa-cog"></i></div>
     </div>
 
-    <!-- 配置面板 (★★ 关键：已汉化 ★★) -->
+    <!-- 配置面板 -->
     <div class="config-panel" id="config-panel">
         <div class="form-group" style="border-bottom: 1px dashed var(--border); padding-bottom: 15px; margin-bottom: 15px;">
             <label style="color: var(--primary); font-weight: bold; font-size: 14px;">🛠️ 功能模式 (Mode)</label>
@@ -291,7 +294,7 @@
     </div>
 
     <div class="footer">
-        <textarea id="user_input" class="input-box" placeholder="粘贴逐字稿..." rows="1" style="height: 40px;" maxlength="10000"></textarea>
+        <textarea id="user_input" class="input-box" placeholder="粘贴个案逐字稿..." rows="1" style="height: 40px;" maxlength="20000"></textarea>
         <div class="send-btn" id="send_btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></div>
     </div>
 </div>
@@ -302,9 +305,8 @@
         <h3>📚 使用指南</h3>
         <br>
         <p><strong>1. 模式切换</strong><br>右上角设置中选择“个案督导”或“咨询陪练”。</p>
-        <p><strong>2. 个案督导</strong><br>粘贴逐字稿，错别字不影响，30秒即可获取专业分析。</p>
+        <p><strong>2. 个案督导</strong><br>直接粘贴逐字稿，获取多维度专业分析。</p>
         <p><strong>3. 咨询陪练</strong><br>AI将扮演来访者，与您进行实战对话练习，并实时反馈。</p>
-        <p><strong>4. 多轮沟通</strong><br>给出分析后，可以补充信息，和AI进行多轮沟通讨论。</p>
     </div>
 </div>
 
@@ -328,14 +330,13 @@
         input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey && window.innerWidth > 768) { e.preventDefault(); sendMessage(); } });
     });
 
-    // 动态更新输入框提示 (逻辑已汉化)
     function updatePlaceholder() {
         const mode = document.getElementById('task_mode').value;
         const input = document.getElementById('user_input');
         if (mode === '咨询陪练') {
             input.placeholder = "请输入开场白 (例如：你好，我是咨询师...)";
         } else {
-            input.placeholder = "粘贴逐字稿 (限1万字)...";
+            input.placeholder = "粘贴个案逐字稿 (限2万字)...";
         }
     }
 
@@ -359,12 +360,12 @@
 
         if (mode === '咨询陪练') {
             document.getElementById('header-title').innerText = "咨询陪练";
-            input.placeholder = "请输入开场白";
+            input.placeholder = "请输入开场白 (如：你好，我是咨询师...)";
             guideText = "🎭 **已切换至【咨询陪练】模式**<br>AI 将扮演来访者。请您输入第一句开场白，开始练习。" + commonTip;
         } else {
             document.getElementById('header-title').innerText = "个案督导";
-            input.placeholder = "粘贴逐字稿 (限1万字)...";
-            guideText = "🎓 **已切换至【个案督导】模式**<br>请直接粘贴您的逐字稿或困惑，我将为您分析。" + commonTip;
+            input.placeholder = "粘贴个案逐字稿 (限2万字)...";
+            guideText = "🎓 **已切换至【个案督导】模式**<br>请直接粘贴您的咨询逐字稿或困惑，我将为您分析。" + commonTip;
         }
 
         const box = document.getElementById('chat-box');
@@ -396,6 +397,7 @@
         appendMessage('user', text);
         input.value = ''; input.style.height = '40px'; input.blur(); closeAll();
         
+        // 1. 显示“正在思考中...”
         const loadingId = showThinking();
 
         try {
@@ -406,7 +408,6 @@
                 "inputs": { 
                     "auth_code": auth, "phone_number": phone, 
                     "school": school, "master_style": master || "资深督导", "hours": Number(hours) || 0,
-                    // ★★★ 这里也会自动传中文的 "咨询陪练" 或 "个案督导" 给 Dify ★★★
                     "task_mode": mode || "个案督导"
                 },
                 "query": text,
@@ -416,13 +417,19 @@
             };
 
             const response = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+
+            // 2. 拿到结果后，立即移除思考动画
             removeThinking(loadingId);
 
             if (!response.ok) throw new Error(`请求失败 (${response.status})`);
             const data = await response.json();
             
-            if (data.answer && data.answer.trim() !== "") appendMessage('ai', data.answer, data.message_id);
-            else if (data.status === "blocked") appendMessage('ai', data.answer || "⛔ 请求被拒绝");
+            // 3. 启用打字机效果 (true 表示开启动画)
+            if (data.answer && data.answer.trim() !== "") {
+                appendMessage('ai', data.answer, data.message_id, true);
+            } else if (data.status === "blocked") {
+                appendMessage('ai', data.answer || "⛔ 请求被拒绝");
+            }
 
             if (currentConvId !== data.conversation_id) { currentConvId = data.conversation_id; updateChatList(currentConvId, text); }
             saveMsg(currentConvId, 'user', text);
@@ -434,19 +441,73 @@
         }
     }
 
-    function appendMessage(role, text, msgId = null) {
+    // --- 核心修改：支持打字机效果 ---
+    function appendMessage(role, text, msgId = null, animate = false) {
         const box = document.getElementById('chat-box');
         const div = document.createElement('div');
         div.className = `message ${role}`;
+        
         const avatar = role === 'ai' ? `<div class="avatar" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3135/3135715.png');"></div>` : '';
-        const htmlText = marked.parse(text || "");
+        
+        // 操作按钮 HTML (先生成好，打字完了再显示)
         let actions = '';
         if (role === 'ai' && msgId) {
-            actions = `<div class="actions"><span class="act-btn" onclick="copyText(this, '${text.replace(/'/g, "\\'").replace(/\n/g, "\\n")}')"><i class="fas fa-copy"></i> 复制</span></div>`;
+            actions = `
+                <div class="actions" id="actions-${msgId}">
+                    <span class="act-btn" onclick="copyText(this, '${text.replace(/'/g, "\\'").replace(/\n/g, "\\n")}')"><i class="fas fa-copy"></i> 复制</span>
+                    <span class="act-btn" onclick="feedback('${msgId}', 'like', this)"><i class="fas fa-thumbs-up"></i></span>
+                    <span class="act-btn" onclick="feedback('${msgId}', 'dislike', this)"><i class="fas fa-thumbs-down"></i></span>
+                </div>`;
         }
-        div.innerHTML = `${avatar}<div class="bubble-content"><div class="bubble">${htmlText}</div>${actions}</div>`;
+
+        // 先把气泡架子搭好
+        div.innerHTML = `${avatar}<div class="bubble-content"><div class="bubble" id="bubble-${msgId || Date.now()}"></div>${actions}</div>`;
         box.appendChild(div);
+        
+        const bubble = div.querySelector('.bubble');
+        
+        if (animate && role === 'ai') {
+            // 打字机逻辑
+            simulateTyping(bubble, text, msgId);
+        } else {
+            // 直接显示 (用户消息或历史记录)
+            bubble.innerHTML = marked.parse(text);
+            if(msgId) {
+                const actDiv = document.getElementById(`actions-${msgId}`);
+                if(actDiv) actDiv.classList.add('show');
+            }
+        }
+        
         box.scrollTop = box.scrollHeight;
+    }
+
+    // --- 打字机效果函数 ---
+    function simulateTyping(element, text, msgId) {
+        let i = 0;
+        // 每次打多少个字 (可调速)
+        const step = 2; 
+        const speed = 30; // 毫秒
+        
+        function type() {
+            if (i < text.length) {
+                i += step;
+                // 实时解析 Markdown (部分解析可能不完美，但为了视觉流畅)
+                // 更好的做法是只显示纯文本，最后再渲染 Markdown，或者用光标模拟
+                // 这里采用：显示已打出的文字的 Markdown 渲染结果
+                element.innerHTML = marked.parse(text.substring(0, i));
+                
+                const box = document.getElementById('chat-box');
+                box.scrollTop = box.scrollHeight;
+                setTimeout(type, speed);
+            } else {
+                // 打完了，确保完整渲染一次
+                element.innerHTML = marked.parse(text);
+                // 显示操作按钮
+                const actDiv = document.getElementById(`actions-${msgId}`);
+                if (actDiv) actDiv.classList.add('show');
+            }
+        }
+        type();
     }
 
     function showThinking() {
@@ -454,13 +515,14 @@
         const box = document.getElementById('chat-box');
         const div = document.createElement('div');
         div.id = id; div.className = 'message ai';
-        div.innerHTML = `<div class="avatar" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3135/3135715.png');"></div><div class="bubble-content"><div class="bubble thinking">... <div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
+        // 恢复了文字：正在思考中...
+        div.innerHTML = `<div class="avatar" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3135/3135715.png');"></div><div class="bubble-content"><div class="bubble thinking">正在思考中... <div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
         box.appendChild(div); box.scrollTop = box.scrollHeight;
         return id;
     }
+    
     function removeThinking(id) { const el = document.getElementById(id); if(el) el.remove(); }
     
-    // 历史记录相关函数
     function startNewChat() { currentConvId = ""; document.getElementById('chat-box').innerHTML = `<div class="message ai"><div class="avatar" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3135/3135715.png');"></div><div class="bubble-content"><div class="bubble">已开启新会话。</div></div></div>`; closeAll(); }
     function updateChatList(id, firstMsg) { const title = firstMsg.substring(0, 10) + "..."; if (!chatList.find(c => c.id === id)) { chatList.unshift({ id: id, title: title }); localStorage.setItem('supervisor_chat_list', JSON.stringify(chatList)); renderHistory(); } }
     function loadChat(id) { currentConvId = id; const msgs = JSON.parse(localStorage.getItem(`sup_msg_${id}`)) || []; document.getElementById('chat-box').innerHTML = ''; msgs.forEach(m => appendMessage(m.role, m.content, m.msgId)); closeAll(); }
@@ -486,7 +548,32 @@
         if(localStorage.getItem('sup_mode')) { document.getElementById('task_mode').value = localStorage.getItem('sup_mode'); updatePlaceholder(); }
     }
     function clearCache() { if(confirm("确定清空？")) { localStorage.clear(); location.reload(); } }
-    function copyText(btn, text) { const t=document.createElement("textarea"); t.value=text; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t); btn.innerHTML='<i class="fas fa-check"></i>'; setTimeout(()=>btn.innerHTML='<i class="fas fa-copy"></i> 复制',2000); }
+    
+    function copyText(btn, text) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try { document.execCommand('copy'); btn.innerHTML = '<i class="fas fa-check"></i> 已复制'; setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i> 复制', 2000); } catch (err) {}
+        document.body.removeChild(textArea);
+    }
+    
+    async function feedback(msgId, rating, btn) {
+        const parent = btn.parentElement;
+        parent.querySelectorAll('.act-btn').forEach(b => b.style.color = '');
+        btn.style.color = '#07C160';
+        try {
+            let userId = localStorage.getItem('dify_user_id');
+            await fetch(`${WORKER_URL}`, { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: 'feedback', message_id: msgId, rating: rating, user: userId })
+            });
+        } catch(e) {}
+    }
 </script>
 
 </body>
