@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AI心理督导大师</title>
+    <title>AI 心理督导大师</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         /* --- 1. 变量定义 (微信绿配色) --- */
         :root {
-            --primary: #07C160;
+            --primary: #07C160; /* 微信绿 */
             --bg: #f2f2f2;
             --white: #ffffff;
             --text: #111;
             --text-sub: #888;
             --border: #e0e0e0;
-            --user-bg: #95ec69;
+            --user-bg: #95ec69; /* 微信气泡浅绿 */
             --ai-bg: #ffffff;
             --sidebar-bg: #f7f7f7;
             --sys-msg-bg: #e1e1e1;
@@ -145,13 +145,12 @@
         .config-panel { position: absolute; top: 50px; left: 0; width: 100%; background: var(--white); z-index: 55; padding: 20px; box-shadow: 0 5px 10px rgba(0,0,0,0.05); transform: translateY(-150%); opacity: 0; transition: transform 0.3s, opacity 0.3s; }
         .config-panel.show { transform: translateY(0); opacity: 1; }
         
-        /* 语言切换按钮 (右上角绝对定位) */
+        /* ★★★ 核心修复：语言切换按钮样式优化 (不再用绝对定位，改用Flex布局) ★★★ */
         .lang-switch {
-            position: absolute;
-            top: 20px; right: 20px;
-            font-size: 13px; color: var(--primary);
+            font-size: 12px; color: var(--primary);
             cursor: pointer; border: 1px solid var(--primary);
-            padding: 4px 8px; border-radius: 4px;
+            padding: 2px 8px; border-radius: 4px;
+            /* 去掉了 position: absolute */
         }
 
         .form-group { margin-bottom: 15px; }
@@ -188,11 +187,14 @@
 
     <!-- 配置面板 -->
     <div class="config-panel" id="config-panel">
-        <!-- 语言切换按钮 -->
-        <div class="lang-switch" onclick="toggleLanguage()">中/En</div>
-
         <div class="form-group" style="border-bottom: 1px dashed var(--border); padding-bottom: 15px; margin-bottom: 15px;">
-            <label style="color: var(--primary); font-weight: bold; font-size: 14px;" data-i18n="label_mode">🛠️ 功能模式</label>
+            <!-- ★★★ 核心修复：使用 Flex 布局，左右排布 ★★★ -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                <label style="color: var(--primary); font-weight: bold; font-size: 14px; margin-bottom: 0;" data-i18n="label_mode">🛠️ 功能模式</label>
+                <!-- 语言切换按钮移到了这里 -->
+                <div class="lang-switch" onclick="toggleLanguage()">中/En</div>
+            </div>
+            
             <select id="task_mode" class="form-control" style="font-weight: bold;" onchange="updatePlaceholder()">
                 <option value="个案督导" data-i18n="opt_supervisor">🎓 个案督导 (分析案例)</option>
                 <option value="咨询陪练" data-i18n="opt_simulation">🎭 咨询陪练 (AI扮演来访者)</option>
@@ -204,7 +206,7 @@
             <input type="text" id="auth_code" class="form-control" placeholder="请输入您的VIP授权码" data-i18n-ph="ph_auth">
         </div>
         <div class="form-group">
-            <label data-i18n="label_id">绑定账号</label>
+            <label data-i18n="label_id">绑定账号 (QQ/手机)</label>
             <input type="text" id="phone_number" class="form-control" placeholder="请输入您的唯一绑定ID" data-i18n-ph="ph_id">
         </div>
         
@@ -247,7 +249,7 @@
                 <i class="fas fa-moon" style="cursor:pointer; font-size:18px;" onclick="toggleTheme()"></i>
             </div>
             <div class="clear-cache-row" onclick="clearCache()" data-i18n="btn_clear">清空所有缓存</div>
-            <div style="text-align:center; margin-top:10px;">技术支持：张兆华工作室 huagelc</div>
+            <div style="text-align:center; margin-top:10px;">Powered by Huage AI</div>
         </div>
     </div>
 
@@ -299,7 +301,7 @@
 <script>
     const WORKER_URL = 'https://dudao.huaged.com'; 
     
-    // --- 国际化配置 (i18n Dictionary) ---
+    // --- 国际化配置 ---
     const i18n = {
         zh: {
             header_title_new: "新会话",
@@ -340,12 +342,12 @@
         en: {
             header_title_new: "New Chat",
             label_mode: "🛠️ Mode",
-            opt_supervisor: "🎓 Supervision (Analysis)",
-            opt_simulation: "🎭 Roleplay (AI Client)",
+            opt_supervisor: "🎓 Supervision",
+            opt_simulation: "🎭 Roleplay",
             label_auth: "Auth Code",
             ph_auth: "Enter VIP Code",
             label_id: "Account ID",
-            ph_id: "Unique ID (Phone/QQ)",
+            ph_id: "Unique ID",
             label_school: "School",
             sch_psycho: "Psychoanalysis",
             sch_human: "Humanistic",
@@ -353,20 +355,20 @@
             sch_lacan: "Lacanian",
             sch_post: "Postmodern",
             sch_none: "Integrative",
-            label_master: "Master Style (Opt)",
+            label_master: "Master (Opt)",
             ph_master: "e.g. Freud",
-            label_hours: "Experience (Hrs)",
-            btn_save: "Save & Start",
+            label_hours: "Experience",
+            btn_save: "Start",
             btn_new_chat: "New Session",
-            btn_help: "Instructions",
+            btn_help: "Guide",
             label_dark: "Dark Mode",
             btn_clear: "Clear Cache",
-            msg_welcome: "Hello! I am your AI Supervisor.<br><br>Click top-right ⚙️ to set up.",
-            ph_input_sup: "Paste transcript (Max 10k words)...",
-            ph_input_sim: "Enter opening line...",
-            guide_sup: "🎓 **Switched to [Supervision]**<br>Paste your transcript for analysis.",
-            guide_sim: "🎭 **Switched to [Roleplay]**<br>AI acts as client. Start the conversation.",
-            tip_voice: "", // English users might not need this tip
+            msg_welcome: "Hello! Setup to start.<br><br>Click top-right ⚙️",
+            ph_input_sup: "Paste transcript...",
+            ph_input_sim: "Start roleplay...",
+            guide_sup: "🎓 **Mode: Supervision**<br>Paste your transcript.",
+            guide_sim: "🎭 **Mode: Roleplay**<br>Start the conversation.",
+            tip_voice: "",
             tip_voice_en: "",
             btn_copy: "Copy",
             btn_copied: "Copied",
@@ -392,7 +394,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         loadConfig();
         applyTheme();
-        applyLanguage(curLang); // 初始化语言
+        applyLanguage(curLang);
         renderHistory();
         checkAd();
         if (chatList.length > 0) loadChat(chatList[0].id);
@@ -401,35 +403,30 @@
         input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey && window.innerWidth > 768) { e.preventDefault(); sendMessage(); } });
     });
 
-    // --- 国际化核心逻辑 ---
     function toggleLanguage() {
         curLang = curLang === 'zh' ? 'en' : 'zh';
         localStorage.setItem('lang', curLang);
         applyLanguage(curLang);
-        updatePlaceholder(); // 更新输入框提示
+        updatePlaceholder();
     }
 
     function applyLanguage(lang) {
         const dict = i18n[lang];
-        // 遍历所有带有 data-i18n 属性的元素
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
             if (dict[key]) el.innerHTML = dict[key];
         });
-        // 遍历 placeholder
         document.querySelectorAll('[data-i18n-ph]').forEach(el => {
             const key = el.getAttribute('data-i18n-ph');
             if (dict[key]) el.placeholder = dict[key];
         });
-        // 特殊处理帮助弹窗内容
         document.getElementById('help-content-zh').style.display = lang === 'zh' ? 'block' : 'none';
         document.getElementById('help-content-en').style.display = lang === 'en' ? 'block' : 'none';
     }
 
-    // --- 修复弹窗逻辑 (先关后开) ---
     function showModal(id) { 
-        closeAll(); // 先关闭所有层
-        document.getElementById(id).style.display = 'flex'; // 再显示目标层
+        closeAll(); 
+        document.getElementById(id).style.display = 'flex'; 
     }
     
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
@@ -438,7 +435,6 @@
         const mode = document.getElementById('task_mode').value;
         const input = document.getElementById('user_input');
         const dict = i18n[curLang];
-        // 兼容中文值和英文值
         if (mode === '咨询陪练' || mode === 'simulation') {
             input.placeholder = dict.ph_input_sim;
         } else {
@@ -529,7 +525,6 @@
                     "auth_code": auth, "phone_number": phone, 
                     "school": school, "master_style": master || "Senior", "hours": Number(hours) || 0,
                     "task_mode": mode || "个案督导",
-                    // ★★★ 把当前语言传给 Dify (English / Chinese) ★★★
                     "language": curLang === 'zh' ? "Chinese" : "English"
                 },
                 "query": text,
@@ -586,10 +581,9 @@
 
     function simulateTyping(element, text, msgId) {
         let i = 0;
-        // 动态计算速度：无论字多少，都在 0.5s~0.8s 内完成
         const totalTime = Math.min(800, Math.max(500, text.length * 10)); 
         const interval = totalTime / text.length; 
-        const step = Math.max(1, Math.floor(text.length / 50)); // 每次渲染的字符数
+        const step = Math.max(1, Math.floor(text.length / 50)); 
 
         function type() {
             if (i < text.length) {
