@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AI心理督导大师</title>
+    <title>AI 心理督导大师</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -81,51 +81,34 @@
         .bubble-content { 
             max-width: 85%; 
             display: flex; flex-direction: column; 
-            min-width: 0; /* 关键：防止子元素撑开 */
+            min-width: 0; 
         }
         
-        /* 【核心修复】气泡样式 & 强制换行 & 隐藏空内容 */
+        /* 气泡样式 & 强制换行 */
         .bubble {
             padding: 12px 16px; border-radius: 8px; font-size: 15px; line-height: 1.6;
             position: relative; color: var(--text);
-            /* 强制换行三件套，解决左右滑动问题 */
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            word-break: break-word; 
+            word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; 
         }
-        
-        /* 隐藏空内容气泡 (修复手机端灰色方块) */
-        .bubble:empty { display: none; } 
+        .bubble:empty { display: none; } /* 隐藏空内容 */
 
         .message.ai .bubble { background: var(--ai-bg); border: 1px solid var(--border); }
         .message.user .bubble { background: var(--user-bg); border: 1px solid transparent; color: #000; }
         [data-theme="dark"] .message.user .bubble { color: #fff; }
 
-        /* Markdown 样式优化 */
+        /* Markdown 样式 */
         .bubble p { margin: 0 0 10px 0; } .bubble p:last-child { margin: 0; }
         .bubble ul, .bubble ol { margin: 5px 0 10px 20px; padding: 0; } 
         .bubble strong { font-weight: 600; } 
 
-        /* 关键优化：代码块自动换行，不再左右滑动 */
+        /* 代码块优化 */
         .bubble pre {
-            white-space: pre-wrap; /* 允许代码块换行 */
-            word-wrap: break-word;
-            background: rgba(0,0,0,0.05);
-            padding: 10px;
-            border-radius: 4px;
-            margin: 10px 0;
-            font-family: monospace;
-            font-size: 13px;
+            white-space: pre-wrap; word-wrap: break-word;
+            background: rgba(0,0,0,0.05); padding: 10px; border-radius: 4px;
+            margin: 10px 0; font-family: monospace; font-size: 13px;
             border: 1px solid rgba(0,0,0,0.1);
         }
-        .bubble code {
-            font-family: monospace;
-            background: rgba(0,0,0,0.05);
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-size: 0.9em;
-            word-break: break-all; /* 长单词强制换行 */
-        }
+        .bubble code { font-family: monospace; background: rgba(0,0,0,0.05); padding: 2px 4px; border-radius: 3px; font-size: 0.9em; word-break: break-all; }
 
         .actions { display: flex; gap: 15px; margin-top: 5px; padding-left: 2px; font-size: 12px; color: var(--text-sub); }
         .message.user .actions { display: none; }
@@ -137,32 +120,18 @@
             background: var(--white); border-top: 1px solid var(--border);
             padding: 10px 15px;
             padding-bottom: calc(10px + env(safe-area-inset-bottom)); 
-            display: flex; 
-            align-items: flex-end; 
-            gap: 10px;
+            display: flex; align-items: flex-end; gap: 10px;
             flex-shrink: 0; z-index: 20;
         }
-        
         .input-box {
-            flex: 1; 
-            min-height: 40px; 
-            max-height: 140px;
-            padding: 9px 12px;
-            border: 1px solid var(--border); border-radius: 6px;
-            font-size: 16px; 
-            outline: none; 
-            background: var(--bg); color: var(--text);
-            resize: none; 
-            overflow-y: auto; 
-            line-height: 1.5;
-            font-family: inherit;
+            flex: 1; min-height: 40px; max-height: 140px;
+            padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;
+            font-size: 16px; outline: none; background: var(--bg); color: var(--text);
+            resize: none; overflow-y: auto; line-height: 1.5; font-family: inherit;
         }
-        
         .send-btn {
-            width: 40px; height: 40px; 
-            background: var(--primary); color: white;
-            border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer;
-            flex-shrink: 0; 
+            width: 40px; height: 40px; background: var(--primary); color: white;
+            border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; 
         }
 
         /* --- 6. 侧边栏 & 设置 --- */
@@ -174,50 +143,37 @@
         .overlay.show { opacity: 1; visibility: visible; }
 
         .sidebar { 
-            position: absolute; top: 0; left: 0; height: 100%; 
-            width: 280px; max-width: 80%; 
+            position: absolute; top: 0; left: 0; height: 100%; width: 280px; max-width: 80%; 
             background: var(--sidebar-bg); z-index: 60; 
             transform: translateX(-100%); opacity: 0;
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
             display: flex; flex-direction: column; border-right: 1px solid var(--border);
         }
         .sidebar.show { transform: translateX(0); opacity: 1; }
-
         .sidebar-header { padding: 20px; border-bottom: 1px solid var(--border); }
+        
         .btn-new-chat {
             display: flex; align-items: center; justify-content: center; gap: 8px;
             width: 100%; padding: 10px; margin-bottom: 10px;
             border-radius: 6px; font-size: 15px; cursor: pointer;
             background: transparent; border: 1px solid var(--primary); color: var(--primary);
-            transition: all 0.2s;
         }
-        .btn-new-chat:hover { background: var(--primary); color: white; }
-        
         .btn-help {
             display: flex; align-items: center; justify-content: center; gap: 5px;
             width: 100%; padding: 8px; border-radius: 6px; font-size: 13px; cursor: pointer;
             background: transparent; border: none; color: var(--text-sub);
         }
-        .btn-help:hover { color: var(--text); background: rgba(0,0,0,0.05); }
-
+        
         .history-list { flex: 1; overflow-y: auto; padding: 10px; }
         .history-item {
             padding: 12px; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--text);
             display: flex; justify-content: space-between; align-items: center; cursor: pointer;
         }
         .history-item.active { color: var(--primary); font-weight: bold; }
-        .history-item:hover { background: rgba(0,0,0,0.03); }
-        .history-actions i { padding: 8px; color: var(--text-sub); cursor: pointer; margin-left: 10px; }
-        .history-actions i:hover { color: var(--text); }
-
+        
         .sidebar-footer { padding: 20px; border-top: 1px solid var(--border); color: var(--text-sub); font-size: 12px; }
         .footer-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        
-        /* 清空缓存按钮居中样式 */
-        .clear-cache-row { 
-            display: flex; justify-content: center; align-items: center; 
-            margin-bottom: 10px; cursor: pointer; text-decoration: underline; 
-        }
+        .clear-cache-row { display: flex; justify-content: center; align-items: center; margin-bottom: 10px; cursor: pointer; text-decoration: underline; }
 
         /* --- 7. 设置面板 --- */
         .config-panel {
@@ -229,23 +185,22 @@
         }
         .config-panel.show { transform: translateY(0); opacity: 1; }
         
-        .form-group { margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 12px; color: var(--text-sub); margin-bottom: 5px; }
         .form-control { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text); }
         
-        .btn-confirm {
-            width: 100%; padding: 12px;
-            background: var(--primary); color: white;
-            border: none; border-radius: 6px;
-            font-size: 15px; font-weight: bold;
-            cursor: pointer; margin-top: 10px;
-        }
-        .btn-confirm:active { opacity: 0.9; }
+        /* 下拉框样式优化 */
+        select.form-control { -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 10px center; background-size: 1em; }
 
+        .btn-confirm {
+            width: 100%; padding: 12px; background: var(--primary); color: white;
+            border: none; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px;
+        }
+
+        /* 弹窗 & 思考动画 */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center; }
         .modal-content { background: var(--white); padding: 25px; border-radius: 8px; width: 85%; max-width: 400px; color: var(--text); position: relative; }
         .close-modal { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; }
-
         .thinking { color: var(--text-sub); font-size: 13px; padding: 12px 18px; min-width: 120px; display: flex; align-items: center; gap: 8px; }
         .dot { width: 5px; height: 5px; background: var(--text-sub); border-radius: 50%; animation: bounce 1.4s infinite; }
         .dot:nth-child(2) { animation-delay: 0.2s; } .dot:nth-child(3) { animation-delay: 0.4s; }
@@ -253,12 +208,6 @@
     </style>
 </head>
 <body>
-
-<!-- 背景广告层 -->
-<div class="ad-layer" id="ad-layer">
-    <div class="ad-item" id="ad-left"></div>
-    <div class="ad-item" id="ad-right"></div>
-</div>
 
 <div class="app-container">
     <div class="overlay" id="overlay" onclick="closeAll()"></div>
@@ -269,7 +218,7 @@
         <div class="header-btn" onclick="toggleConfig()"><i class="fas fa-cog"></i></div>
     </div>
 
-    <!-- 督导配置面板 -->
+    <!-- 督导配置面板 (已改为下拉框) -->
     <div class="config-panel" id="config-panel">
         <div class="form-group">
             <label>授权码 (Auth Code)</label>
@@ -279,10 +228,20 @@
             <label>手机号 (绑定设备用)</label>
             <input type="text" id="phone_number" class="form-control" placeholder="请输入您的手机号">
         </div>
+        
+        <!-- ★★★ 这里改成了下拉框，值与 Dify 完全一致 ★★★ -->
         <div class="form-group">
-            <label>流派 (如：精神分析、CBT)</label>
-            <input type="text" id="school" class="form-control" placeholder="请输入您所属流派">
+            <label>流派</label>
+            <select id="school" class="form-control">
+                <option value="精神分析">精神分析</option>
+                <option value="人本主义">人本主义</option>
+                <option value="认知行为">认知行为</option>
+                <option value="拉康学派">拉康学派</option>
+                <option value="后现代">后现代</option>
+                <option value="不分流派，综合督导">不分流派，综合督导</option>
+            </select>
         </div>
+
         <div class="form-group">
             <label>督导大师风格 (如：弗洛伊德)</label>
             <input type="text" id="master_style" class="form-control" placeholder="请输入希望模仿的大师">
@@ -306,17 +265,15 @@
         </div>
         <div class="history-list" id="history-list"></div>
         <div class="sidebar-footer">
-            <!-- 夜间模式开关 -->
             <div class="footer-row">
                 <span>夜间模式</span>
                 <i class="fas fa-moon" style="cursor:pointer; font-size:18px;" onclick="toggleTheme()"></i>
             </div>
-            <!-- 清空缓存居中 -->
             <div class="clear-cache-row" onclick="clearCache()">
                 清空所有缓存
             </div>
             <div style="text-align:center; margin-top:10px;">
-                技术支持：张兆华工作室 huagelc
+                技术支持：张兆华工作室
             </div>
         </div>
     </div>
@@ -342,7 +299,6 @@
     </div>
 </div>
 
-<!-- 这里的文案已完全替换为你提供的版本 -->
 <div class="modal" id="help-modal">
     <div class="modal-content">
         <span class="close-modal" onclick="closeModal('help-modal')">&times;</span>
@@ -390,7 +346,7 @@
         const phone = document.getElementById('phone_number').value.trim();
         if (!auth || !phone) { alert("请完善授权码和手机号！"); return; }
         saveConfig();
-        closeAll(); // 收起面板，不弹窗
+        closeAll();
     }
 
     function showModal(id) { document.getElementById(id).style.display = 'flex'; closeAll(); }
@@ -409,7 +365,7 @@
         
         const auth = document.getElementById('auth_code').value.trim();
         const phone = document.getElementById('phone_number').value.trim();
-        const school = document.getElementById('school').value.trim();
+        const school = document.getElementById('school').value.trim(); // 获取下拉框的值
         const master = document.getElementById('master_style').value.trim();
         const hours = document.getElementById('hours').value.trim();
 
@@ -429,7 +385,7 @@
                 "inputs": { 
                     "auth_code": auth,
                     "phone_number": phone,
-                    "school": school || "综合流派",
+                    "school": school, // 发送下拉框选中的标准值
                     "master_style": master || "资深督导",
                     "hours": Number(hours) || 0
                 },
@@ -445,13 +401,11 @@
                 body: JSON.stringify(payload)
             });
 
-            // 1. 先移除思考动画
             removeThinking(loadingId);
 
             if (!response.ok) throw new Error(`请求失败 (${response.status})`);
             const data = await response.json();
             
-            // 2. 检查是否有有效内容 (解决灰色小方块问题)
             if (data.answer && data.answer.trim() !== "") {
                 appendMessage('ai', data.answer, data.message_id);
             } else if (data.status === "blocked") {
@@ -463,7 +417,6 @@
                 updateChatList(currentConvId, text);
             }
             saveMsg(currentConvId, 'user', text);
-            // 只有当有回复时才保存AI的消息
             if (data.answer) {
                 saveMsg(currentConvId, 'ai', data.answer, data.message_id);
             }
@@ -482,7 +435,6 @@
         const avatar = role === 'ai' ? `<div class="avatar" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3135/3135715.png');"></div>` : '';
         const htmlText = marked.parse(text || "");
 
-        // 增加 actions 按钮
         let actions = '';
         if (role === 'ai' && msgId) {
             actions = `
@@ -536,7 +488,6 @@
         closeAll();
     }
 
-    // --- 核心修复：渲染历史记录时添加按钮 ---
     function renderHistory() {
         const list = document.getElementById('history-list');
         list.innerHTML = chatList.map(c => `
@@ -550,7 +501,6 @@
         `).join('');
     }
 
-    // --- 新增：重命名功能 ---
     function renameChat(id, e) {
         e.stopPropagation();
         const newName = prompt("请输入新的对话名称：");
@@ -565,7 +515,6 @@
         }
     }
 
-    // --- 新增：删除功能 ---
     function deleteChat(id, e) {
         e.stopPropagation();
         if(!confirm("确定要删除此对话吗？")) return;
@@ -586,47 +535,4 @@
         localStorage.setItem('sup_phone', document.getElementById('phone_number').value);
         localStorage.setItem('sup_school', document.getElementById('school').value);
         localStorage.setItem('sup_master', document.getElementById('master_style').value);
-        localStorage.setItem('sup_hours', document.getElementById('hours').value);
-    }
-    function loadConfig() {
-        if(localStorage.getItem('sup_auth')) document.getElementById('auth_code').value = localStorage.getItem('sup_auth');
-        if(localStorage.getItem('sup_phone')) document.getElementById('phone_number').value = localStorage.getItem('sup_phone');
-        if(localStorage.getItem('sup_school')) document.getElementById('school').value = localStorage.getItem('sup_school');
-        if(localStorage.getItem('sup_master')) document.getElementById('master_style').value = localStorage.getItem('sup_master');
-        if(localStorage.getItem('sup_hours')) document.getElementById('hours').value = localStorage.getItem('sup_hours');
-    }
-    function clearCache() {
-        if(confirm("确定清空所有记录？")) { localStorage.clear(); location.reload(); }
-    }
-    
-    function copyText(btn, text) {
-        const textArea = document.createElement("textarea");
-        textArea.value = text;
-        textArea.style.position = "fixed";
-        textArea.style.left = "-9999px";
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        try { document.execCommand('copy'); btn.innerHTML = '<i class="fas fa-check"></i> 已复制'; setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i> 复制', 2000); } catch (err) {}
-        document.body.removeChild(textArea);
-    }
-    
-    async function feedback(msgId, rating, btn) {
-        const parent = btn.parentElement;
-        parent.querySelectorAll('.act-btn').forEach(b => b.style.color = '');
-        btn.style.color = '#07C160';
-        try {
-            let userId = localStorage.getItem('dify_user_id');
-            await fetch(`${WORKER_URL}`, { 
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ type: 'feedback', message_id: msgId, rating: rating, user: userId })
-            });
-        } catch(e) {}
-    }
-</script>
-
-</body>
-</html>
-
-
+        localStorage.setItem('sup_hours', document.getElementB
