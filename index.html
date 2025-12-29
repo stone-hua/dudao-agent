@@ -7,127 +7,61 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* --- 1. 变量定义 (微信绿配色) --- */
-        :root {
-            --primary: #07C160; /* 微信绿 */
-            --bg: #f2f2f2;
-            --white: #ffffff;
-            --text: #111;
-            --text-sub: #888;
-            --border: #e0e0e0;
-            --user-bg: #95ec69; /* 微信气泡浅绿 */
-            --ai-bg: #ffffff;
-            --sidebar-bg: #f7f7f7;
-            --sys-msg-bg: #e1e1e1;
-        }
-
-        [data-theme="dark"] {
-            --primary: #07C160;
-            --bg: #111111;
-            --white: #1e1e1e;
-            --text: #e0e0e0;
-            --text-sub: #aaa;
-            --border: #333;
-            --user-bg: #056a36;
-            --ai-bg: #2c2c2c;
-            --sidebar-bg: #1a1a1a;
-            --sys-msg-bg: #333;
-        }
-
+        /* 1. 基础变量 */
+        :root { --primary: #07C160; --bg: #f2f2f2; --white: #ffffff; --text: #111; --text-sub: #888; --border: #e0e0e0; --user-bg: #95ec69; --ai-bg: #ffffff; --sidebar-bg: #f7f7f7; --sys-msg-bg: #e1e1e1; }
+        [data-theme="dark"] { --primary: #07C160; --bg: #111111; --white: #1e1e1e; --text: #e0e0e0; --text-sub: #aaa; --border: #333; --user-bg: #056a36; --ai-bg: #2c2c2c; --sidebar-bg: #1a1a1a; --sys-msg-bg: #333; }
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        html, body { width: 100%; height: 100dvh; overflow: hidden; background-color: #222; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; justify-content: center; }
 
-        html, body {
-            width: 100%; height: 100dvh;
-            overflow: hidden;
-            background-color: #222;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            display: flex; justify-content: center;
-        }
+        /* 2. 布局框架 */
+        .app-container { width: 100%; height: 100%; background: var(--bg); display: flex; flex-direction: column; position: relative; margin: 0 auto; z-index: 10; overflow: hidden; }
+        @media (min-width: 768px) { .app-container { max-width: 450px; box-shadow: 0 0 30px rgba(0,0,0,0.5); } }
 
-        /* --- 2. App 容器 --- */
-        .app-container {
-            width: 100%; height: 100%;
-            background: var(--bg);
-            display: flex; flex-direction: column;
-            position: relative; margin: 0 auto;
-            z-index: 10;
-            overflow: hidden;
-        }
-
-        @media (min-width: 768px) {
-            .app-container { max-width: 450px; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
-        }
-
-        /* --- 3. 顶部导航 --- */
-        .header {
-            height: 50px; background: var(--white); border-bottom: 1px solid var(--border);
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 15px; flex-shrink: 0; z-index: 20; color: var(--text);
-        }
+        /* 3. 顶部导航 */
+        .header { height: 50px; background: var(--white); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 15px; flex-shrink: 0; z-index: 20; color: var(--text); }
         .header-title { font-weight: 600; font-size: 16px; }
         .header-btn { font-size: 18px; cursor: pointer; padding: 8px; }
 
-        /* --- 4. 聊天区域 --- */
-        .chat-area {
-            flex: 1; overflow-y: auto; padding: 15px;
-            -webkit-overflow-scrolling: touch;
-            display: flex; flex-direction: column; gap: 15px;
-        }
-
+        /* 4. 聊天区域 */
+        .chat-area { flex: 1; overflow-y: auto; padding: 15px; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 15px; }
         .message { display: flex; align-items: flex-start; gap: 10px; max-width: 100%; }
         .message.user { flex-direction: row-reverse; }
         .avatar { width: 38px; height: 38px; border-radius: 4px; background-size: cover; flex-shrink: 0; }
         .message.user .avatar { display: none; }
         .bubble-content { max-width: 85%; display: flex; flex-direction: column; min-width: 0; }
         
-        .bubble {
-            padding: 12px 16px; border-radius: 8px; font-size: 15px; line-height: 1.6;
-            position: relative; color: var(--text);
-            word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; 
-        }
+        .bubble { padding: 12px 16px; border-radius: 8px; font-size: 15px; line-height: 1.6; position: relative; color: var(--text); word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; }
         .bubble:empty { display: none; }
-
-        /* 系统消息 */
-        .message.system { justify-content: center; margin: 10px 0; }
-        .message.system .bubble { background-color: var(--sys-msg-bg); color: var(--text-sub); font-size: 13px; padding: 8px 15px; border-radius: 15px; text-align: center; border: none; }
-        .highlight-tip { color: var(--primary); font-weight: bold; }
-
         .message.ai .bubble { background: var(--ai-bg); border: 1px solid var(--border); }
         .message.user .bubble { background: var(--user-bg); border: 1px solid transparent; color: #000; }
         [data-theme="dark"] .message.user .bubble { color: #fff; }
 
-        /* Markdown & Code */
+        /* 系统提示 */
+        .message.system { justify-content: center; margin: 10px 0; }
+        .message.system .bubble { background-color: var(--sys-msg-bg); color: var(--text-sub); font-size: 13px; padding: 8px 15px; border-radius: 15px; text-align: center; border: none; }
+        .highlight-tip { color: var(--primary); font-weight: bold; }
+
+        /* Markdown & Code 样式 */
         .bubble p { margin: 0 0 10px 0; } .bubble p:last-child { margin: 0; }
         .bubble ul, .bubble ol { margin: 5px 0 10px 20px; padding: 0; } .bubble strong { font-weight: 600; } 
         .bubble pre { white-space: pre-wrap; word-wrap: break-word; background: rgba(0,0,0,0.05); padding: 10px; border-radius: 4px; margin: 10px 0; font-family: monospace; font-size: 13px; border: 1px solid rgba(0,0,0,0.1); }
         .bubble code { font-family: monospace; background: rgba(0,0,0,0.05); padding: 2px 4px; border-radius: 3px; font-size: 0.9em; word-break: break-all; }
 
+        /* 操作栏 (仅保留复制) */
         .actions { display: flex; gap: 15px; margin-top: 5px; padding-left: 2px; font-size: 12px; color: var(--text-sub); opacity: 0; transition: opacity 0.3s; }
         .actions.show { opacity: 1; }
         .message.user .actions { display: none; }
-        .act-btn { cursor: pointer; display: flex; align-items: center; gap: 3px; }
-        .act-btn:hover, .act-btn.active { color: var(--primary); }
+        .act-btn { cursor: pointer; display: flex; align-items: center; gap: 3px; transition: color 0.2s; }
+        .act-btn:hover { color: var(--primary); }
 
-        /* --- 5. 底部输入区 --- */
-        .footer {
-            background: var(--white); border-top: 1px solid var(--border);
-            padding: 10px 15px;
-            padding-bottom: calc(10px + env(safe-area-inset-bottom)); 
-            display: flex; align-items: flex-end; gap: 10px;
-            flex-shrink: 0; z-index: 20;
-        }
-        .input-box {
-            flex: 1; min-height: 40px; max-height: 140px;
-            padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;
-            font-size: 16px; outline: none; background: var(--bg); color: var(--text);
-            resize: none; overflow-y: auto; line-height: 1.5; font-family: inherit;
-        }
+        /* 5. 底部输入区 */
+        .footer { background: var(--white); border-top: 1px solid var(--border); padding: 10px 15px; padding-bottom: calc(10px + env(safe-area-inset-bottom)); display: flex; align-items: flex-end; gap: 10px; flex-shrink: 0; z-index: 20; }
+        .input-box { flex: 1; min-height: 40px; max-height: 140px; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 16px; outline: none; background: var(--bg); color: var(--text); resize: none; overflow-y: auto; line-height: 1.5; font-family: inherit; }
         .send-btn { width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
 
-        /* --- 6. 侧边栏 & 设置 --- */
+        /* 6. 侧边栏 & 面板 */
         .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 50; opacity: 0; visibility: hidden; transition: 0.3s; }
         .overlay.show { opacity: 1; visibility: visible; }
-
         .sidebar { position: absolute; top: 0; left: 0; height: 100%; width: 280px; max-width: 80%; background: var(--sidebar-bg); z-index: 60; transform: translateX(-100%); opacity: 0; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s; display: flex; flex-direction: column; border-right: 1px solid var(--border); }
         .sidebar.show { transform: translateX(0); opacity: 1; }
         .sidebar-header { padding: 20px; border-bottom: 1px solid var(--border); }
@@ -141,24 +75,17 @@
         .footer-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .clear-cache-row { display: flex; justify-content: center; align-items: center; margin-bottom: 10px; cursor: pointer; text-decoration: underline; }
 
-        /* --- 7. 设置面板 --- */
+        /* 配置面板 */
         .config-panel { position: absolute; top: 50px; left: 0; width: 100%; background: var(--white); z-index: 55; padding: 20px; box-shadow: 0 5px 10px rgba(0,0,0,0.05); transform: translateY(-150%); opacity: 0; transition: transform 0.3s, opacity 0.3s; }
         .config-panel.show { transform: translateY(0); opacity: 1; }
-        
-        /* ★★★ 核心修复：语言切换按钮样式优化 (不再用绝对定位，改用Flex布局) ★★★ */
-        .lang-switch {
-            font-size: 12px; color: var(--primary);
-            cursor: pointer; border: 1px solid var(--primary);
-            padding: 2px 8px; border-radius: 4px;
-            /* 去掉了 position: absolute */
-        }
-
+        .lang-switch { font-size: 12px; color: var(--primary); cursor: pointer; border: 1px solid var(--primary); padding: 2px 8px; border-radius: 4px; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 12px; color: var(--text-sub); margin-bottom: 5px; }
         .form-control { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text); }
         select.form-control { -webkit-appearance: none; appearance: none; background-color: var(--bg); }
         .btn-confirm { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
 
+        /* 弹窗 & 动画 */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center; }
         .modal-content { background: var(--white); padding: 25px; border-radius: 8px; width: 85%; max-width: 400px; color: var(--text); position: relative; }
         .close-modal { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; }
@@ -169,12 +96,6 @@
     </style>
 </head>
 <body>
-
-<!-- 背景广告层 -->
-<div class="ad-layer" id="ad-layer">
-    <div class="ad-item" id="ad-left"></div>
-    <div class="ad-item" id="ad-right"></div>
-</div>
 
 <div class="app-container">
     <div class="overlay" id="overlay" onclick="closeAll()"></div>
@@ -188,13 +109,10 @@
     <!-- 配置面板 -->
     <div class="config-panel" id="config-panel">
         <div class="form-group" style="border-bottom: 1px dashed var(--border); padding-bottom: 15px; margin-bottom: 15px;">
-            <!-- ★★★ 核心修复：使用 Flex 布局，左右排布 ★★★ -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                 <label style="color: var(--primary); font-weight: bold; font-size: 14px; margin-bottom: 0;" data-i18n="label_mode">🛠️ 功能模式</label>
-                <!-- 语言切换按钮移到了这里 -->
                 <div class="lang-switch" onclick="toggleLanguage()">中/En</div>
             </div>
-            
             <select id="task_mode" class="form-control" style="font-weight: bold;" onchange="updatePlaceholder()">
                 <option value="个案督导" data-i18n="opt_supervisor">🎓 个案督导 (分析案例)</option>
                 <option value="咨询陪练" data-i18n="opt_simulation">🎭 咨询陪练 (AI扮演来访者)</option>
@@ -206,8 +124,8 @@
             <input type="text" id="auth_code" class="form-control" placeholder="请输入您的授权码" data-i18n-ph="ph_auth">
         </div>
         <div class="form-group">
-            <label data-i18n="label_id">绑定账号 (QQ或手机)</label>
-            <input type="text" id="phone_number" class="form-control" placeholder="请输入您的唯一绑定ID" data-i18n-ph="ph_id">
+            <label data-i18n="label_id">绑定账号 (QQ或手机号)</label>
+            <input type="text" id="phone_number" class="form-control" placeholder="请输入您的绑定号码" data-i18n-ph="ph_id">
         </div>
         
         <div class="form-group">
@@ -222,11 +140,11 @@
             </select>
         </div>
         <div class="form-group">
-            <label data-i18n="label_master">大师风格 (选填)</label>
-            <input type="text" id="master_style" class="form-control" placeholder="输入大师名字" data-i18n-ph="ph_master">
+            <label data-i18n="label_master">大师风格 (咨询陪练模式下，此处别填)</label>
+            <input type="text" id="master_style" class="form-control" placeholder="选填：督导大师姓名。如：弗洛伊德" data-i18n-ph="ph_master">
         </div>
         <div class="form-group">
-            <label data-i18n="label_hours">从业时长</label>
+            <label data-i18n="label_hours">从业小时数</label>
             <input type="number" id="hours" class="form-control" placeholder="300">
         </div>
         <button class="btn-confirm" onclick="confirmConfig()" data-i18n="btn_save">保存设置，开始</button>
@@ -302,199 +220,83 @@
 
 <script>
     const WORKER_URL = 'https://dudao.huaged.com'; 
-    
-    // --- 国际化配置 ---
     const i18n = {
         zh: {
-            header_title_new: "新会话",
-            label_mode: "🛠️ 功能模式",
-            opt_supervisor: "🎓 个案督导 (分析案例)",
-            opt_simulation: "🎭 咨询陪练 (AI扮演来访者)",
-            label_auth: "授权码",
-            ph_auth: "请输入您的授权码",
-            label_id: "绑定账号 (QQ或手机)",
-            ph_id: "请输入号码",
-            label_school: "流派",
-            sch_psycho: "精神分析",
-            sch_human: "人本主义",
-            sch_cbt: "认知行为 (CBT)",
-            sch_lacan: "拉康学派",
-            sch_post: "后现代",
-            sch_none: "不分流派",
-            label_master: "大师风格 (咨询陪练模式下，此处别填)",
-            ph_master: "选填：督导大师姓名。如：弗洛伊德",
-            label_hours: "从业小时",
-            btn_save: "保存设置，开始",
-            btn_new_chat: "开启新咨询",
-            btn_help: "使用说明",
-            label_dark: "夜间模式",
-            btn_clear: "清空所有对话缓存",
+            header_title_new: "新会话", label_mode: "🛠️ 功能模式", opt_supervisor: "🎓 个案督导 (分析案例)", opt_simulation: "🎭 咨询陪练 (AI扮演来访者)",
+            label_auth: "授权码", ph_auth: "请输入您的授权码", label_id: "绑定账号 (QQ 或 手机号)", ph_id: "请输入您的绑定号码",
+            label_school: "流派", sch_psycho: "精神分析", sch_human: "人本主义", sch_cbt: "认知行为 (CBT)", sch_lacan: "拉康学派", sch_post: "后现代", sch_none: "不分流派",
+            label_master: "大师风格 (咨询陪练模式下，此处别填)", ph_master: "选填：督导大师姓名。如：弗洛伊德", label_hours: "从业小时数",
+            btn_save: "保存设置，开始", btn_new_chat: "开启新咨询", btn_help: "使用说明", label_dark: "夜间模式", btn_clear: "清空所有对话缓存",
             msg_welcome: "您好！我是您的AI心理助手。<br><br>请点击右上角 ⚙️ 选择模式并完善信息。",
-            ph_input_sup: "粘贴逐字稿 (限1万字)...",
-            ph_input_sim: "你好，我是咨询师...",
+            ph_input_sup: "粘贴逐字稿 (限1万字)...", ph_input_sim: "你好，我是咨询师...",
             guide_sup: "🎓 **已切换至【个案督导】模式**<br>请直接粘贴您的咨询逐字稿或输入您的困惑。",
             guide_sim: "🎭 **已切换至【咨询陪练】模式**<br>AI 将扮演来访者。请您输入第一句开场白。",
-            tip_voice: "<br><br><span class='highlight-tip'>💡 小技巧：使用手机【语音转文字】，输入效率更高！</span>",
-            tip_voice_en: "<br><br><span class='highlight-tip'>💡 Tip: Use Voice-to-Text for efficiency!</span>",
-            btn_copy: "复制",
-            btn_copied: "已复制",
-            help_title: "📚 使用指南",
-            btn_got_it: "我知道了"
+            tip_voice: "<br><br><span class='highlight-tip'>💡 小技巧：使用手机【语音转文字】，输入效率更高！</span>", tip_voice_en: "<br><br><span class='highlight-tip'>💡 Tip: Use Voice-to-Text for efficiency!</span>",
+            btn_copy: "复制", btn_copied: "已复制", help_title: "📚 使用指南", btn_got_it: "我知道了"
         },
         en: {
-            header_title_new: "New Chat",
-            label_mode: "🛠️ Mode",
-            opt_supervisor: "🎓 Supervision",
-            opt_simulation: "🎭 Roleplay",
-            label_auth: "Auth Code",
-            ph_auth: "Enter VIP Code",
-            label_id: "Account ID",
-            ph_id: "Unique ID",
-            label_school: "School",
-            sch_psycho: "Psychoanalysis",
-            sch_human: "Humanistic",
-            sch_cbt: "CBT",
-            sch_lacan: "Lacanian",
-            sch_post: "Postmodern",
-            sch_none: "Integrative",
-            label_master: "Master (Opt)",
-            ph_master: "e.g. Freud",
-            label_hours: "Experience",
-            btn_save: "Start",
-            btn_new_chat: "New Session",
-            btn_help: "Guide",
-            label_dark: "Dark Mode",
-            btn_clear: "Clear Cache",
-            msg_welcome: "Hello! Setup to start.<br><br>Click top-right ⚙️",
-            ph_input_sup: "Paste transcript...",
-            ph_input_sim: "Start roleplay...",
-            guide_sup: "🎓 **Mode: Supervision**<br>Paste your transcript.",
-            guide_sim: "🎭 **Mode: Roleplay**<br>Start the conversation.",
-            tip_voice: "",
-            tip_voice_en: "",
-            btn_copy: "Copy",
-            btn_copied: "Copied",
-            help_title: "📚 Guide",
-            btn_got_it: "Got it"
+            header_title_new: "New Chat", label_mode: "🛠️ Mode", opt_supervisor: "🎓 Supervision", opt_simulation: "🎭 Roleplay",
+            label_auth: "Auth Code", ph_auth: "Enter VIP Code", label_id: "Account ID", ph_id: "Unique ID",
+            label_school: "School", sch_psycho: "Psychoanalysis", sch_human: "Humanistic", sch_cbt: "CBT", sch_lacan: "Lacanian", sch_post: "Postmodern", sch_none: "Integrative",
+            label_master: "Master (Opt)", ph_master: "e.g. Freud", label_hours: "Experience",
+            btn_save: "Start", btn_new_chat: "New Session", btn_help: "Guide", label_dark: "Dark Mode", btn_clear: "Clear Cache",
+            msg_welcome: "Hello! Setup to start.<br><br>Click top-right ⚙️", ph_input_sup: "Paste transcript...", ph_input_sim: "Start roleplay...",
+            guide_sup: "🎓 **Mode: Supervision**<br>Paste your transcript.", guide_sim: "🎭 **Mode: Roleplay**<br>Start the conversation.",
+            tip_voice: "", tip_voice_en: "", btn_copy: "Copy", btn_copied: "Copied", help_title: "📚 Guide", btn_got_it: "Got it"
         }
     };
 
-    const AD_CONFIG = {
-        enable: false,
-        showOnce: true,
-        id: "promo_2025_01",
-        title: "🎉 新功能上线",
-        text: "【模拟陪练】模式已上线！<br>现在您可以和AI来访者进行实战对练了。<br>快去右上角设置切换体验吧！",
-        imageUrl: ""
-    };
-
+    const AD_CONFIG = { enable: false, showOnce: true, id: "promo_2025_01", title: "🎉 新功能上线", text: "【模拟陪练】模式已上线！<br>现在您可以和AI来访者进行实战对练了。<br>快去右上角设置切换体验吧！", imageUrl: "" };
     let currentConvId = "";
     let chatList = JSON.parse(localStorage.getItem('supervisor_chat_list')) || [];
     let isDark = localStorage.getItem('theme') === 'dark';
     let curLang = localStorage.getItem('lang') || 'zh';
 
     document.addEventListener('DOMContentLoaded', () => {
-        loadConfig();
-        applyTheme();
-        applyLanguage(curLang);
-        renderHistory();
-        checkAd();
+        loadConfig(); applyTheme(); applyLanguage(curLang); renderHistory(); checkAd();
         if (chatList.length > 0) loadChat(chatList[0].id);
         const input = document.getElementById('user_input');
         input.addEventListener('input', function() { this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px'; });
         input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey && window.innerWidth > 768) { e.preventDefault(); sendMessage(); } });
     });
 
-    function toggleLanguage() {
-        curLang = curLang === 'zh' ? 'en' : 'zh';
-        localStorage.setItem('lang', curLang);
-        applyLanguage(curLang);
-        updatePlaceholder();
-    }
-
+    function toggleLanguage() { curLang = curLang === 'zh' ? 'en' : 'zh'; localStorage.setItem('lang', curLang); applyLanguage(curLang); updatePlaceholder(); }
     function applyLanguage(lang) {
         const dict = i18n[lang];
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.getAttribute('data-i18n');
-            if (dict[key]) el.innerHTML = dict[key];
-        });
-        document.querySelectorAll('[data-i18n-ph]').forEach(el => {
-            const key = el.getAttribute('data-i18n-ph');
-            if (dict[key]) el.placeholder = dict[key];
-        });
+        document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); if (dict[key]) el.innerHTML = dict[key]; });
+        document.querySelectorAll('[data-i18n-ph]').forEach(el => { const key = el.getAttribute('data-i18n-ph'); if (dict[key]) el.placeholder = dict[key]; });
         document.getElementById('help-content-zh').style.display = lang === 'zh' ? 'block' : 'none';
         document.getElementById('help-content-en').style.display = lang === 'en' ? 'block' : 'none';
     }
 
-    function showModal(id) { 
-        closeAll(); 
-        document.getElementById(id).style.display = 'flex'; 
-    }
-    
+    function showModal(id) { closeAll(); document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-    function updatePlaceholder() {
-        const mode = document.getElementById('task_mode').value;
-        const input = document.getElementById('user_input');
-        const dict = i18n[curLang];
-        if (mode === '咨询陪练' || mode === 'simulation') {
-            input.placeholder = dict.ph_input_sim;
-        } else {
-            input.placeholder = dict.ph_input_sup;
-        }
-    }
+    function updatePlaceholder() { const mode = document.getElementById('task_mode').value; const input = document.getElementById('user_input'); const dict = i18n[curLang]; if (mode === '咨询陪练' || mode === 'simulation') { input.placeholder = dict.ph_input_sim; } else { input.placeholder = dict.ph_input_sup; } }
 
     function toggleSidebar() { closeConfig(); document.getElementById('sidebar').classList.toggle('show'); document.getElementById('overlay').classList.toggle('show'); }
     function toggleConfig() { closeSidebar(); document.getElementById('config-panel').classList.toggle('show'); document.getElementById('overlay').classList.toggle('show'); }
-    function closeAll() { 
-        document.getElementById('sidebar').classList.remove('show'); 
-        document.getElementById('config-panel').classList.remove('show'); 
-        document.getElementById('overlay').classList.remove('show'); 
-        document.getElementById('ad-modal').style.display = 'none';
-        document.getElementById('help-modal').style.display = 'none';
-    }
+    function closeAll() { document.getElementById('sidebar').classList.remove('show'); document.getElementById('config-panel').classList.remove('show'); document.getElementById('overlay').classList.remove('show'); document.getElementById('ad-modal').style.display = 'none'; document.getElementById('help-modal').style.display = 'none'; }
     function closeSidebar() { document.getElementById('sidebar').classList.remove('show'); }
     function closeConfig() { document.getElementById('config-panel').classList.remove('show'); }
 
-    function checkAd() {
-        if (!AD_CONFIG.enable) return;
-        const viewed = localStorage.getItem('ad_viewed_id');
-        if (AD_CONFIG.showOnce && viewed === AD_CONFIG.id) return;
-        document.getElementById('ad-title').innerText = AD_CONFIG.title;
-        document.getElementById('ad-text').innerHTML = AD_CONFIG.text;
-        if (AD_CONFIG.imageUrl) { const img = document.getElementById('ad-image'); img.src = AD_CONFIG.imageUrl; img.style.display = 'block'; }
-        document.getElementById('ad-modal').style.display = 'flex';
-        if (AD_CONFIG.showOnce) localStorage.setItem('ad_viewed_id', AD_CONFIG.id);
-    }
+    function checkAd() { if (!AD_CONFIG.enable) return; const viewed = localStorage.getItem('ad_viewed_id'); if (AD_CONFIG.showOnce && viewed === AD_CONFIG.id) return; document.getElementById('ad-title').innerText = AD_CONFIG.title; document.getElementById('ad-text').innerHTML = AD_CONFIG.text; if (AD_CONFIG.imageUrl) { const img = document.getElementById('ad-image'); img.src = AD_CONFIG.imageUrl; img.style.display = 'block'; } document.getElementById('ad-modal').style.display = 'flex'; if (AD_CONFIG.showOnce) localStorage.setItem('ad_viewed_id', AD_CONFIG.id); }
     
     function confirmConfig() {
         const auth = document.getElementById('auth_code').value.trim();
         const phone = document.getElementById('phone_number').value.trim();
         if (!auth || !phone) { alert(curLang === 'zh' ? "请完善信息！" : "Please complete info!"); return; }
-        saveConfig();
-        closeAll();
-
+        saveConfig(); closeAll();
         const mode = document.getElementById('task_mode').value;
-        const input = document.getElementById('user_input');
         const dict = i18n[curLang];
-        let guideText = "";
+        let guideText = (mode === '咨询陪练' || mode === 'simulation') ? dict.guide_sim : dict.guide_sup;
+        guideText += (curLang === 'zh' ? dict.tip_voice : dict.tip_voice_en);
+        document.getElementById('header-title').innerText = (mode === '咨询陪练' || mode === 'simulation') ? (curLang === 'zh' ? "咨询陪练" : "Roleplay") : (curLang === 'zh' ? "个案督导" : "Supervision");
         
-        if (mode === '咨询陪练' || mode === 'simulation') {
-            document.getElementById('header-title').innerText = curLang === 'zh' ? "咨询陪练" : "Roleplay";
-            input.placeholder = dict.ph_input_sim;
-            guideText = dict.guide_sim + (curLang === 'zh' ? dict.tip_voice : dict.tip_voice_en);
-        } else {
-            document.getElementById('header-title').innerText = curLang === 'zh' ? "个案督导" : "Supervision";
-            input.placeholder = dict.ph_input_sup;
-            guideText = dict.guide_sup + (curLang === 'zh' ? dict.tip_voice : dict.tip_voice_en);
-        }
-
         const box = document.getElementById('chat-box');
         const div = document.createElement('div');
         div.className = 'message system';
         div.innerHTML = `<div class="bubble-content"><div class="bubble">${guideText}</div></div>`;
-        box.appendChild(div);
-        box.scrollTop = box.scrollHeight;
+        box.appendChild(div); box.scrollTop = box.scrollHeight;
     }
 
     function toggleTheme() { isDark = !isDark; localStorage.setItem('theme', isDark ? 'dark' : 'light'); applyTheme(); }
@@ -502,7 +304,12 @@
 
     async function sendMessage() {
         const input = document.getElementById('user_input');
+        const sendBtn = document.getElementById('send_btn');
         const text = input.value.trim();
+        
+        // 防连点校验
+        if (input.disabled) return;
+
         const auth = document.getElementById('auth_code').value.trim();
         const phone = document.getElementById('phone_number').value.trim();
         const school = document.getElementById('school').value.trim();
@@ -514,7 +321,16 @@
         if (!auth || !phone) { alert(curLang === 'zh' ? "请完善设置！" : "Please setup first!"); toggleConfig(); return; }
 
         appendMessage('user', text);
-        input.value = ''; input.style.height = '40px'; input.blur(); closeAll();
+        
+        // 🔒 上锁
+        input.value = ''; 
+        input.style.height = '40px'; 
+        input.blur(); 
+        closeAll();
+        input.disabled = true;
+        input.placeholder = curLang === 'zh' ? "AI 正在思考，请稍候..." : "AI Thinking...";
+        sendBtn.style.pointerEvents = "none";
+        sendBtn.style.opacity = "0.5";
         
         const loadingId = showThinking();
 
@@ -525,7 +341,7 @@
             const payload = {
                 "inputs": { 
                     "auth_code": auth, "phone_number": phone, 
-                    "school": school, "master_style": master || "Senior", "hours": Number(hours) || 0,
+                    "school": school, "master_style": master || "资深督导", "hours": Number(hours) || 0,
                     "task_mode": mode || "个案督导",
                     "language": curLang === 'zh' ? "Chinese" : "English"
                 },
@@ -542,8 +358,11 @@
             if (!response.ok) throw new Error(`Error (${response.status})`);
             const data = await response.json();
             
-            if (data.answer && data.answer.trim() !== "") appendMessage('ai', data.answer, data.message_id, true);
-            else if (data.status === "blocked") appendMessage('ai', data.answer || "⛔ Blocked");
+            if (data.answer && data.answer.trim() !== "") {
+                appendMessage('ai', data.answer, data.message_id, true);
+            } else if (data.status === "blocked") {
+                appendMessage('ai', data.answer || "⛔ 请求被拒绝");
+            }
 
             if (currentConvId !== data.conversation_id) { currentConvId = data.conversation_id; updateChatList(currentConvId, text); }
             saveMsg(currentConvId, 'user', text);
@@ -552,6 +371,13 @@
         } catch (error) {
             removeThinking(loadingId);
             appendMessage('ai', `❌ Error：${error.message}`);
+        } finally {
+            // 🔓 解锁
+            input.disabled = false;
+            updatePlaceholder(); 
+            input.focus();
+            sendBtn.style.pointerEvents = "auto";
+            sendBtn.style.opacity = "1";
         }
     }
 
@@ -561,14 +387,13 @@
         div.className = `message ${role}`;
         const avatar = role === 'ai' ? `<div class="avatar" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3135/3135715.png');"></div>` : '';
         
+        // 纯净版：只显示复制按钮
         let actions = '';
         const dict = i18n[curLang];
         if (role === 'ai' && msgId) {
             actions = `
                 <div class="actions" id="actions-${msgId}">
                     <span class="act-btn" onclick="copyText(this, '${text.replace(/'/g, "\\'").replace(/\n/g, "\\n")}')"><i class="fas fa-copy"></i> ${dict.btn_copy}</span>
-                    <span class="act-btn" onclick="feedback('${msgId}', 'like', this)"><i class="fas fa-thumbs-up"></i></span>
-                    <span class="act-btn" onclick="feedback('${msgId}', 'dislike', this)"><i class="fas fa-thumbs-down"></i></span>
                 </div>`;
         }
 
@@ -586,18 +411,15 @@
         const totalTime = Math.min(800, Math.max(500, text.length * 10)); 
         const interval = totalTime / text.length; 
         const step = Math.max(1, Math.floor(text.length / 50)); 
-
         function type() {
             if (i < text.length) {
                 i += step;
                 element.innerHTML = marked.parse(text.substring(0, i));
-                const box = document.getElementById('chat-box');
-                box.scrollTop = box.scrollHeight;
+                const box = document.getElementById('chat-box'); box.scrollTop = box.scrollHeight;
                 setTimeout(type, interval);
             } else {
                 element.innerHTML = marked.parse(text);
-                const actDiv = document.getElementById(`actions-${msgId}`);
-                if (actDiv) actDiv.classList.add('show');
+                const actDiv = document.getElementById(`actions-${msgId}`); if(actDiv) actDiv.classList.add('show');
             }
         }
         type();
@@ -619,8 +441,8 @@
     function updateChatList(id, firstMsg) { const title = firstMsg.substring(0, 10) + "..."; if (!chatList.find(c => c.id === id)) { chatList.unshift({ id: id, title: title }); localStorage.setItem('supervisor_chat_list', JSON.stringify(chatList)); renderHistory(); } }
     function loadChat(id) { currentConvId = id; const msgs = JSON.parse(localStorage.getItem(`sup_msg_${id}`)) || []; document.getElementById('chat-box').innerHTML = ''; msgs.forEach(m => appendMessage(m.role, m.content, m.msgId)); closeAll(); }
     function renderHistory() { document.getElementById('history-list').innerHTML = chatList.map(c => `<div class="history-item ${c.id === currentConvId ? 'active' : ''}" onclick="loadChat('${c.id}')"><span>${c.title}</span><div class="history-actions"><i class="fas fa-pen" onclick="renameChat('${c.id}', event)"></i><i class="fas fa-trash" onclick="deleteChat('${c.id}', event)"></i></div></div>`).join(''); }
-    function renameChat(id, e) { e.stopPropagation(); const newName = prompt("Rename:"); if (newName) { const chat = chatList.find(c => c.id === id); if (chat) { chat.title = newName; localStorage.setItem('supervisor_chat_list', JSON.stringify(chatList)); renderHistory(); } } }
-    function deleteChat(id, e) { e.stopPropagation(); if(!confirm("Delete?")) return; chatList = chatList.filter(c => c.id !== id); localStorage.setItem('supervisor_chat_list', JSON.stringify(chatList)); localStorage.removeItem(`sup_msg_${id}`); renderHistory(); if(currentConvId === id) startNewChat(); }
+    function renameChat(id, e) { e.stopPropagation(); const newName = prompt(curLang==='zh'?"重命名：":"Rename:"); if (newName) { const chat = chatList.find(c => c.id === id); if (chat) { chat.title = newName; localStorage.setItem('supervisor_chat_list', JSON.stringify(chatList)); renderHistory(); } } }
+    function deleteChat(id, e) { e.stopPropagation(); if(!confirm(curLang==='zh'?"删除此对话？":"Delete?")) return; chatList = chatList.filter(c => c.id !== id); localStorage.setItem('supervisor_chat_list', JSON.stringify(chatList)); localStorage.removeItem(`sup_msg_${id}`); renderHistory(); if(currentConvId === id) startNewChat(); }
     function saveMsg(id, role, content, msgId) { let msgs = JSON.parse(localStorage.getItem(`sup_msg_${id}`)) || []; msgs.push({ role, content, msgId }); localStorage.setItem(`sup_msg_${id}`, JSON.stringify(msgs)); }
 
     function saveConfig() {
@@ -640,28 +462,16 @@
         if(localStorage.getItem('sup_mode')) { document.getElementById('task_mode').value = localStorage.getItem('sup_mode'); updatePlaceholder(); }
     }
     function clearCache() { if(confirm("Clear All Cache?")) { localStorage.clear(); location.reload(); } }
-    function copyText(btn, text) { const t=document.createElement("textarea"); t.value=text; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t); btn.innerHTML='<i class="fas fa-check"></i>'; setTimeout(()=>btn.innerHTML='<i class="fas fa-copy"></i>',2000); }
     
-    async function feedback(msgId, rating, btn) {
-        const parent = btn.parentElement;
-        parent.querySelectorAll('.act-btn').forEach(b => b.style.color = '');
-        btn.style.color = '#07C160';
-        try {
-            let userId = localStorage.getItem('dify_user_id');
-            await fetch(`${WORKER_URL}`, { 
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ type: 'feedback', message_id: msgId, rating: rating, user: userId })
-            });
-        } catch(e) {}
+    // 复制功能
+    function copyText(btn, text) { 
+        const t = document.createElement("textarea"); t.value = text; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t); 
+        const original = btn.innerHTML;
+        const copiedText = (typeof i18n !== 'undefined' && i18n[curLang]) ? i18n[curLang].btn_copied : "已复制";
+        btn.innerHTML = `<i class="fas fa-check"></i> ${copiedText}`; 
+        setTimeout(() => btn.innerHTML = original, 2000); 
     }
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
