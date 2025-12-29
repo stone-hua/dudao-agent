@@ -507,14 +507,9 @@
     function toggleTheme() { isDark = !isDark; localStorage.setItem('theme', isDark ? 'dark' : 'light'); applyTheme(); }
     function applyTheme() { document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light'); }
 
-async function sendMessage() {
+    async function sendMessage() {
         const input = document.getElementById('user_input');
-        const sendBtn = document.getElementById('send_btn'); 
         const text = input.value.trim();
-        
-        // 防连点校验
-        if (input.disabled) return;
-
         const auth = document.getElementById('auth_code').value.trim();
         const phone = document.getElementById('phone_number').value.trim();
         const school = document.getElementById('school').value.trim();
@@ -526,16 +521,7 @@ async function sendMessage() {
         if (!auth || !phone) { alert(curLang === 'zh' ? "请完善设置！" : "Please setup first!"); toggleConfig(); return; }
 
         appendMessage('user', text);
-        
-        // 🔒 上锁
-        input.value = ''; 
-        input.style.height = '40px'; 
-        input.blur(); 
-        closeAll();
-        input.disabled = true;
-        input.placeholder = "AI Thinking...";
-        sendBtn.style.pointerEvents = "none";
-        sendBtn.style.opacity = "0.5";
+        input.value = ''; input.style.height = '40px'; input.blur(); closeAll();
         
         const loadingId = showThinking();
 
@@ -563,28 +549,12 @@ async function sendMessage() {
             if (!response.ok) throw new Error(`Error (${response.status})`);
             const data = await response.json();
             
-            if (data.answer && data.answer.trim() !== "") {
-                appendMessage('ai', data.answer, data.message_id, true);
-            } else if (data.status === "blocked") {
-                appendMessage('ai', data.answer || "⛔ Blocked");
-            }
+            if (data.answer && data.answer.trim() !== "") appendMessage('ai', data.answer, data.message_id, true);
+            else if (data.status === "blocked") appendMessage('ai', data.answer || "⛔ Blocked");
 
             if (currentConvId !== data.conversation_id) { currentConvId = data.conversation_id; updateChatList(currentConvId, text); }
             saveMsg(currentConvId, 'user', text);
             if (data.answer) saveMsg(currentConvId, 'ai', data.answer, data.message_id);
-
-        } catch (error) {
-            removeThinking(loadingId);
-            appendMessage('ai', `❌ Error：${error.message}`);
-        } finally {
-            // 🔓 解锁
-            input.disabled = false;
-            updatePlaceholder(); 
-            input.focus();
-            sendBtn.style.pointerEvents = "auto";
-            sendBtn.style.opacity = "1";
-        }
-    }
 
         } catch (error) {
             removeThinking(loadingId);
