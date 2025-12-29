@@ -9,13 +9,13 @@
     <style>
         /* --- 1. 变量定义 (微信绿配色) --- */
         :root {
-            --primary: #07C160;
+            --primary: #07C160; /* 微信绿 */
             --bg: #f2f2f2;
             --white: #ffffff;
             --text: #111;
             --text-sub: #888;
             --border: #e0e0e0;
-            --user-bg: #95ec69;
+            --user-bg: #95ec69; /* 微信气泡浅绿 */
             --ai-bg: #ffffff;
             --sidebar-bg: #f7f7f7;
             --sys-msg-bg: #e1e1e1;
@@ -87,11 +87,9 @@
         }
         .bubble:empty { display: none; }
 
+        /* 系统消息 */
         .message.system { justify-content: center; margin: 10px 0; }
-        .message.system .bubble { 
-            background-color: var(--sys-msg-bg); color: var(--text-sub); 
-            font-size: 13px; padding: 8px 15px; border-radius: 15px; text-align: center; border: none;
-        }
+        .message.system .bubble { background-color: var(--sys-msg-bg); color: var(--text-sub); font-size: 13px; padding: 8px 15px; border-radius: 15px; text-align: center; border: none; }
         .highlight-tip { color: var(--primary); font-weight: bold; }
 
         .message.ai .bubble { background: var(--ai-bg); border: 1px solid var(--border); }
@@ -107,12 +105,15 @@
         .actions { display: flex; gap: 15px; margin-top: 5px; padding-left: 2px; font-size: 12px; color: var(--text-sub); opacity: 0; transition: opacity 0.3s; }
         .actions.show { opacity: 1; }
         .message.user .actions { display: none; }
-        .act-btn { cursor: pointer; display: flex; align-items: center; gap: 3px; transition: color 0.2s; }
-        .act-btn:hover { color: var(--text); }
-        
-        /* 点赞/点踩激活样式 */
+        .act-btn { cursor: pointer; display: flex; align-items: center; gap: 3px; }
+        /* --- 请将这两行代码添加到 .act-btn 样式下方 --- */
+          
+        /* 点赞激活样式 (绿色) */
         .act-btn.active-like { color: var(--primary); font-weight: bold; }
+         
+        /* 点踩激活样式 (灰色或红色，这里设为深灰) */
         .act-btn.active-dislike { color: #999; font-weight: bold; }
+        .act-btn:hover, .act-btn.active { color: var(--primary); }
 
         /* --- 5. 底部输入区 --- */
         .footer {
@@ -150,7 +151,15 @@
         /* --- 7. 设置面板 --- */
         .config-panel { position: absolute; top: 50px; left: 0; width: 100%; background: var(--white); z-index: 55; padding: 20px; box-shadow: 0 5px 10px rgba(0,0,0,0.05); transform: translateY(-150%); opacity: 0; transition: transform 0.3s, opacity 0.3s; }
         .config-panel.show { transform: translateY(0); opacity: 1; }
-        .lang-switch { font-size: 12px; color: var(--primary); cursor: pointer; border: 1px solid var(--primary); padding: 2px 8px; border-radius: 4px; }
+        
+        /* ★★★ 核心修复：语言切换按钮样式优化 (不再用绝对定位，改用Flex布局) ★★★ */
+        .lang-switch {
+            font-size: 12px; color: var(--primary);
+            cursor: pointer; border: 1px solid var(--primary);
+            padding: 2px 8px; border-radius: 4px;
+            /* 去掉了 position: absolute */
+        }
+
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 12px; color: var(--text-sub); margin-bottom: 5px; }
         .form-control { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text); }
@@ -186,10 +195,13 @@
     <!-- 配置面板 -->
     <div class="config-panel" id="config-panel">
         <div class="form-group" style="border-bottom: 1px dashed var(--border); padding-bottom: 15px; margin-bottom: 15px;">
+            <!-- ★★★ 核心修复：使用 Flex 布局，左右排布 ★★★ -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                 <label style="color: var(--primary); font-weight: bold; font-size: 14px; margin-bottom: 0;" data-i18n="label_mode">🛠️ 功能模式</label>
+                <!-- 语言切换按钮移到了这里 -->
                 <div class="lang-switch" onclick="toggleLanguage()">中/En</div>
             </div>
+            
             <select id="task_mode" class="form-control" style="font-weight: bold;" onchange="updatePlaceholder()">
                 <option value="个案督导" data-i18n="opt_supervisor">🎓 个案督导 (分析案例)</option>
                 <option value="咨询陪练" data-i18n="opt_simulation">🎭 咨询陪练 (AI扮演来访者)</option>
@@ -198,10 +210,10 @@
         
         <div class="form-group">
             <label data-i18n="label_auth">授权码</label>
-            <input type="text" id="auth_code" class="form-control" placeholder="请输入您的VIP授权码" data-i18n-ph="ph_auth">
+            <input type="text" id="auth_code" class="form-control" placeholder="请输入您的授权码" data-i18n-ph="ph_auth">
         </div>
         <div class="form-group">
-            <label data-i18n="label_id">绑定账号 (QQ/手机)</label>
+            <label data-i18n="label_id">绑定账号 (QQ或手机)</label>
             <input type="text" id="phone_number" class="form-control" placeholder="请输入您的唯一绑定ID" data-i18n-ph="ph_id">
         </div>
         
@@ -218,11 +230,11 @@
         </div>
         <div class="form-group">
             <label data-i18n="label_master">大师风格 (选填)</label>
-            <input type="text" id="master_style" class="form-control" placeholder="请输入大师名字 (选填)" data-i18n-ph="ph_master">
+            <input type="text" id="master_style" class="form-control" placeholder="输入大师名字" data-i18n-ph="ph_master">
         </div>
         <div class="form-group">
             <label data-i18n="label_hours">从业时长</label>
-            <input type="number" id="hours" class="form-control" placeholder="500">
+            <input type="number" id="hours" class="form-control" placeholder="300">
         </div>
         <button class="btn-confirm" onclick="confirmConfig()" data-i18n="btn_save">保存设置，开始</button>
     </div>
@@ -271,8 +283,10 @@
         <br>
         <div id="help-content-zh">
             <p><strong>1. 模式切换</strong><br>右上角设置中选择“个案督导”或“咨询陪练”。</p>
-            <p><strong>2. 个案督导</strong><br>直接粘贴逐字稿，获取多维度专业分析。</p>
-            <p><strong>3. 咨询陪练</strong><br>AI将扮演来访者，与您进行实战对话练习，并实时反馈。</p>
+            <p><strong>2. 绑定鉴权</strong><br>输入授权码和号码，系统自动验证有效期和次数。</p>
+            <p><strong>3. 发送案例</strong><br>粘贴逐字稿，错别字也不影响，30秒即可获取专业分析。</p>
+            <p><strong>4. 多轮沟通</strong><br>给出分析后，可以补充信息，和AI督导进行多轮沟通。</p>
+            <p><strong>5. 咨询陪练</strong><br>模拟咨询场景，给咨询师的回应打分和优化建议。</p>
         </div>
         <div id="help-content-en" style="display:none;">
             <p><strong>1. Switch Mode</strong><br>Select "Supervisor" or "Simulation" in settings.</p>
@@ -305,7 +319,7 @@
             opt_simulation: "🎭 咨询陪练 (AI扮演来访者)",
             label_auth: "授权码",
             ph_auth: "请输入您的授权码",
-            label_id: "绑定账号 (QQ/手机)",
+            label_id: "绑定账号 (QQ或手机)",
             ph_id: "请输入号码",
             label_school: "流派",
             sch_psycho: "精神分析",
@@ -314,8 +328,8 @@
             sch_lacan: "拉康学派",
             sch_post: "后现代",
             sch_none: "不分流派",
-            label_master: "大师风格 (选填)",
-            ph_master: "请输入大师名字 (选填)",
+            label_master: "大师风格 (咨询陪练模式下，此处别填)",
+            ph_master: "选填：督导大师姓名。如：弗洛伊德",
             label_hours: "从业小时",
             btn_save: "保存设置，开始",
             btn_new_chat: "开启新咨询",
@@ -518,7 +532,7 @@
             const payload = {
                 "inputs": { 
                     "auth_code": auth, "phone_number": phone, 
-                    "school": school, "master_style": master || "资深督导", "hours": Number(hours) || 0,
+                    "school": school, "master_style": master || "Senior", "hours": Number(hours) || 0,
                     "task_mode": mode || "个案督导",
                     "language": curLang === 'zh' ? "Chinese" : "English"
                 },
@@ -532,14 +546,11 @@
 
             removeThinking(loadingId);
 
-            if (!response.ok) throw new Error(`请求失败 (${response.status})`);
+            if (!response.ok) throw new Error(`Error (${response.status})`);
             const data = await response.json();
             
-            if (data.answer && data.answer.trim() !== "") {
-                appendMessage('ai', data.answer, data.message_id, true);
-            } else if (data.status === "blocked") {
-                appendMessage('ai', data.answer || "⛔ 请求被拒绝");
-            }
+            if (data.answer && data.answer.trim() !== "") appendMessage('ai', data.answer, data.message_id, true);
+            else if (data.status === "blocked") appendMessage('ai', data.answer || "⛔ Blocked");
 
             if (currentConvId !== data.conversation_id) { currentConvId = data.conversation_id; updateChatList(currentConvId, text); }
             saveMsg(currentConvId, 'user', text);
@@ -547,7 +558,7 @@
 
         } catch (error) {
             removeThinking(loadingId);
-            appendMessage('ai', `❌ 错误：${error.message}`);
+            appendMessage('ai', `❌ Error：${error.message}`);
         }
     }
 
@@ -555,18 +566,14 @@
         const box = document.getElementById('chat-box');
         const div = document.createElement('div');
         div.className = `message ${role}`;
-        
         const avatar = role === 'ai' ? `<div class="avatar" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3135/3135715.png');"></div>` : '';
-        const htmlText = marked.parse(text || "");
-
-        // 增加 actions 按钮 (真·点赞)
+        
         let actions = '';
+        const dict = i18n[curLang];
         if (role === 'ai' && msgId) {
-            // 获取当前语言的“已复制”文本
-            const copiedText = i18n[curLang].btn_copied;
             actions = `
                 <div class="actions" id="actions-${msgId}">
-                    <span class="act-btn" onclick="copyText(this, '${text.replace(/'/g, "\\'").replace(/\n/g, "\\n")}')"><i class="fas fa-copy"></i> ${i18n[curLang].btn_copy}</span>
+                    <span class="act-btn" onclick="copyText(this, '${text.replace(/'/g, "\\'").replace(/\n/g, "\\n")}')"><i class="fas fa-copy"></i> ${dict.btn_copy}</span>
                     <span class="act-btn" onclick="feedback('${msgId}', 'like', this)"><i class="fas fa-thumbs-up"></i></span>
                     <span class="act-btn" onclick="feedback('${msgId}', 'dislike', this)"><i class="fas fa-thumbs-down"></i></span>
                 </div>`;
@@ -576,26 +583,17 @@
         box.appendChild(div);
         
         const bubble = div.querySelector('.bubble');
-        
-        if (animate && role === 'ai') {
-            simulateTyping(bubble, text, msgId);
-        } else {
-            bubble.innerHTML = marked.parse(text);
-            if(msgId) {
-                const actDiv = document.getElementById(`actions-${msgId}`);
-                if(actDiv) actDiv.classList.add('show');
-            }
-        }
-        
+        if (animate && role === 'ai') simulateTyping(bubble, text, msgId);
+        else { bubble.innerHTML = marked.parse(text); if(msgId) { const actDiv = document.getElementById(`actions-${msgId}`); if(actDiv) actDiv.classList.add('show'); } }
         box.scrollTop = box.scrollHeight;
     }
 
-    // 打字机效果
     function simulateTyping(element, text, msgId) {
         let i = 0;
         const totalTime = Math.min(800, Math.max(500, text.length * 10)); 
         const interval = totalTime / text.length; 
         const step = Math.max(1, Math.floor(text.length / 50)); 
+
         function type() {
             if (i < text.length) {
                 i += step;
@@ -617,19 +615,19 @@
         const box = document.getElementById('chat-box');
         const div = document.createElement('div');
         div.id = id; div.className = 'message ai';
-        div.innerHTML = `<div class="avatar" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3135/3135715.png');"></div><div class="bubble-content"><div class="bubble thinking">正在思考中... <div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
+        const txt = curLang === 'zh' ? "正在思考中..." : "Thinking...";
+        div.innerHTML = `<div class="avatar" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3135/3135715.png');"></div><div class="bubble-content"><div class="bubble thinking">${txt} <div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
         box.appendChild(div); box.scrollTop = box.scrollHeight;
         return id;
     }
     function removeThinking(id) { const el = document.getElementById(id); if(el) el.remove(); }
     
-    // 历史记录相关
     function startNewChat() { currentConvId = ""; document.getElementById('chat-box').innerHTML = `<div class="message ai"><div class="avatar" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3135/3135715.png');"></div><div class="bubble-content"><div class="bubble" data-i18n="msg_welcome">${i18n[curLang].msg_welcome}</div></div></div>`; closeAll(); }
     function updateChatList(id, firstMsg) { const title = firstMsg.substring(0, 10) + "..."; if (!chatList.find(c => c.id === id)) { chatList.unshift({ id: id, title: title }); localStorage.setItem('supervisor_chat_list', JSON.stringify(chatList)); renderHistory(); } }
     function loadChat(id) { currentConvId = id; const msgs = JSON.parse(localStorage.getItem(`sup_msg_${id}`)) || []; document.getElementById('chat-box').innerHTML = ''; msgs.forEach(m => appendMessage(m.role, m.content, m.msgId)); closeAll(); }
     function renderHistory() { document.getElementById('history-list').innerHTML = chatList.map(c => `<div class="history-item ${c.id === currentConvId ? 'active' : ''}" onclick="loadChat('${c.id}')"><span>${c.title}</span><div class="history-actions"><i class="fas fa-pen" onclick="renameChat('${c.id}', event)"></i><i class="fas fa-trash" onclick="deleteChat('${c.id}', event)"></i></div></div>`).join(''); }
-    function renameChat(id, e) { e.stopPropagation(); const newName = prompt(curLang==='zh'?"重命名：":"Rename:"); if (newName) { const chat = chatList.find(c => c.id === id); if (chat) { chat.title = newName; localStorage.setItem('supervisor_chat_list', JSON.stringify(chatList)); renderHistory(); } } }
-    function deleteChat(id, e) { e.stopPropagation(); if(!confirm(curLang==='zh'?"删除此对话？":"Delete?")) return; chatList = chatList.filter(c => c.id !== id); localStorage.setItem('supervisor_chat_list', JSON.stringify(chatList)); localStorage.removeItem(`sup_msg_${id}`); renderHistory(); if(currentConvId === id) startNewChat(); }
+    function renameChat(id, e) { e.stopPropagation(); const newName = prompt("Rename:"); if (newName) { const chat = chatList.find(c => c.id === id); if (chat) { chat.title = newName; localStorage.setItem('supervisor_chat_list', JSON.stringify(chatList)); renderHistory(); } } }
+    function deleteChat(id, e) { e.stopPropagation(); if(!confirm("Delete?")) return; chatList = chatList.filter(c => c.id !== id); localStorage.setItem('supervisor_chat_list', JSON.stringify(chatList)); localStorage.removeItem(`sup_msg_${id}`); renderHistory(); if(currentConvId === id) startNewChat(); }
     function saveMsg(id, role, content, msgId) { let msgs = JSON.parse(localStorage.getItem(`sup_msg_${id}`)) || []; msgs.push({ role, content, msgId }); localStorage.setItem(`sup_msg_${id}`, JSON.stringify(msgs)); }
 
     function saveConfig() {
@@ -648,8 +646,7 @@
         if(localStorage.getItem('sup_hours')) document.getElementById('hours').value = localStorage.getItem('sup_hours');
         if(localStorage.getItem('sup_mode')) { document.getElementById('task_mode').value = localStorage.getItem('sup_mode'); updatePlaceholder(); }
     }
-    function clearCache() { if(confirm(curLang==='zh'?"确定清空？":"Clear All?")) { localStorage.clear(); location.reload(); } }
-
+    function clearCache() { if(confirm("Clear All Cache?")) { localStorage.clear(); location.reload(); } }
     // 1. 复制功能升级：显示“已复制”反馈
     function copyText(btn, text) { 
         const t = document.createElement("textarea"); 
@@ -659,11 +656,13 @@
         document.execCommand('copy'); 
         document.body.removeChild(t); 
         
+        // 保存按钮原来的内容
         const original = btn.innerHTML;
-        // 动态适配语言
+        // 显示已复制 (自动适配中英文)
         const copiedText = (typeof i18n !== 'undefined' && i18n[curLang]) ? i18n[curLang].btn_copied : "已复制";
         btn.innerHTML = `<i class="fas fa-check"></i> ${copiedText}`; 
         
+        // 2秒后恢复原状
         setTimeout(() => btn.innerHTML = original, 2000); 
     }
     
@@ -673,19 +672,22 @@
         const isLike = rating === 'like';
         const activeClass = isLike ? 'active-like' : 'active-dislike';
         
+        // 互斥逻辑：先移除兄弟按钮的所有激活状态
         parent.querySelectorAll('.act-btn').forEach(b => {
             b.classList.remove('active-like', 'active-dislike');
         });
         
+        // 激活当前按钮 (添加高亮样式)
         btn.classList.add(activeClass);
         
+        // 发送真实请求给 Cloudflare
         try {
             let userId = localStorage.getItem('dify_user_id');
             await fetch(`${WORKER_URL}`, { 
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
-                    type: 'feedback', 
+                    type: 'feedback', // 标记这是反馈请求
                     message_id: msgId, 
                     rating: rating, 
                     user: userId 
