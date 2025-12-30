@@ -466,7 +466,7 @@
             removeThinking(loadingId);
             appendMessage('ai', `❌ Error：${error.message}`);
         } finally {
-            input.disabled = false; updatePlaceholder(); input.focus(); sendBtn.style.pointerEvents = "auto"; sendBtn.style.opacity = "1";
+            input.disabled = false; updatePlaceholder(); sendBtn.style.pointerEvents = "auto"; sendBtn.style.opacity = "1";
         }
     }
 
@@ -521,7 +521,7 @@
         div.id = id; div.className = 'message ai';
         const txt = curLang === 'zh' ? "正在思考中..." : "Thinking...";
         div.innerHTML = `<div class="avatar" style="background-image: url('${AI_AVATAR_URL}')"></div><div class="bubble-content"><div class="bubble thinking">${txt} <div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
-        box.appendChild(div); box.scrollTop = box.scrollHeight;
+        box.appendChild(div); setTimeout(() => { box.scrollTop = box.scrollHeight; }, 50); 
         return id;
     }
     function removeThinking(id) { const el = document.getElementById(id); if(el) el.remove(); }
