@@ -284,21 +284,49 @@
     function confirmConfig() {
         const auth = document.getElementById('auth_code').value.trim();
         const phone = document.getElementById('phone_number').value.trim();
-        if (!auth || !phone) { alert(curLang === 'zh' ? "请完善信息！" : "Please complete info!"); return; }
-        saveConfig(); closeAll();
+        // 获取并转换小时数
+        const hoursInput = document.getElementById('hours').value;
+        const hours = Number(hoursInput);
+
+        // 1. 基础非空校验
+        if (!auth || !phone) { 
+            alert(curLang === 'zh' ? "请完善授权码和绑定ID！" : "Please complete info!"); 
+            return; 
+        }
+
+        // 2. ★★★ 新增：数字强制校验 ★★★
+        // 如果 hoursInput 不为空，且 (不是数字 或者 小于0)
+        if (hoursInput !== "" && (isNaN(hours) || hours < 0)) {
+            alert(curLang === 'zh' ? "从业时长必须是有效的数字！" : "Hours must be a valid number!");
+            return; // 阻止保存
+        }
+
+        saveConfig();
+        closeAll();
+
         const mode = document.getElementById('task_mode').value;
+        const input = document.getElementById('user_input');
         const dict = i18n[curLang];
-        let guideText = (mode === '咨询陪练' || mode === 'simulation') ? dict.guide_sim : dict.guide_sup;
-        guideText += (curLang === 'zh' ? dict.tip_voice : dict.tip_voice_en);
-        document.getElementById('header-title').innerText = (mode === '咨询陪练' || mode === 'simulation') ? (curLang === 'zh' ? "咨询陪练" : "Roleplay") : (curLang === 'zh' ? "个案督导" : "Supervision");
-        
+        let guideText = "";
+        const commonTip = curLang === 'zh' ? dict.tip_voice : dict.tip_voice_en;
+
+        if (mode === '咨询陪练' || mode === 'simulation') {
+            document.getElementById('header-title').innerText = curLang === 'zh' ? "咨询陪练" : "Roleplay";
+            input.placeholder = dict.ph_input_sim;
+            guideText = dict.guide_sim + commonTip;
+        } else {
+            document.getElementById('header-title').innerText = curLang === 'zh' ? "个案督导" : "Supervision";
+            input.placeholder = dict.ph_input_sup;
+            guideText = dict.guide_sup + commonTip;
+        }
+
         const box = document.getElementById('chat-box');
         const div = document.createElement('div');
         div.className = 'message system';
         div.innerHTML = `<div class="bubble-content"><div class="bubble">${guideText}</div></div>`;
-        box.appendChild(div); box.scrollTop = box.scrollHeight;
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
     }
-
     function toggleTheme() { isDark = !isDark; localStorage.setItem('theme', isDark ? 'dark' : 'light'); applyTheme(); }
     function applyTheme() { document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light'); }
 
