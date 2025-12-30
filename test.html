@@ -295,7 +295,7 @@
 
         // 2. ★★★ 从业时长必填且必须是数字 ★★★
         if (hoursInput === "" || isNaN(hours) || hours < 0) {
-            alert(curLang === 'zh' ? "请正确填写从业时长（必须是正整数）！" : "Please enter valid experience hours!");
+            alert(curLang === 'zh' ? "从业时长，必须是纯数字！" : "Please enter valid experience hours!");
             return; // 直接拦截，不准保存
         }
 
