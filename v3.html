@@ -445,7 +445,24 @@
                 "user": userId
             };
 
-            const response = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            // --- 新增：自动重试逻辑 (解决 Load failed) ---
+            const fetchWithRetry = async (url, options, n = 3) => {
+                try {
+                    return await fetch(url, options);
+                } catch (err) {
+                    if (n <= 1) throw err;
+                    await new Promise(r => setTimeout(r, 1000)); // 等1秒再试
+                    return await fetchWithRetry(url, options, n - 1);
+                }
+            };
+
+            const response = await fetchWithRetry(WORKER_URL, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify(payload) 
+            });
+            // -------------------------------------------
+JSON.stringify(payload) });
 
             removeThinking(loadingId);
 
@@ -524,7 +541,13 @@
         box.appendChild(div); setTimeout(() => { box.scrollTop = box.scrollHeight; }, 50); 
         return id;
     }
-    function removeThinking(id) { const el = document.getElementById(id); if(el) el.remove(); }
+    function removeThinking(id) { 
+        const el = document.getElementById(id); 
+        if(el) {
+            el.style.display = 'none'; 
+            setTimeout(() => el.remove(), 1000); 
+        }
+    }
     
     function startNewChat() { 
         currentConvId = ""; 
