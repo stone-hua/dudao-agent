@@ -19,24 +19,21 @@
 
         /* 3. 顶部导航 */
         .header { height: 50px; background: var(--white); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 15px; flex-shrink: 0; z-index: 20; color: var(--text); }
-        .header-title { font-weight: 600; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%; }
+        .header-title { font-weight: 600; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%; transition: opacity 0.3s; }
         .header-btn { font-size: 18px; cursor: pointer; padding: 8px; }
 
-        /* 4. 聊天区域 (增加淡入动画) */
+        /* 4. 聊天区域 (含淡入动画) */
         .chat-area { 
             flex: 1; overflow-y: auto; padding: 15px; 
-            -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 15px; 
-            opacity: 1; transition: opacity 0.3s ease-in; /* 动画过渡 */
+            -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 15px;
+            opacity: 1; transition: opacity 0.4s ease; /* 切换动画 */
         }
-        /* 切换时隐藏样式 */
         .chat-area.fading { opacity: 0; }
 
         .message { display: flex; align-items: flex-start; gap: 10px; max-width: 100%; }
         .message.user { flex-direction: row-reverse; }
-        
-        /* 头像样式 (方形圆角) */
+        /* 头像样式优化 */
         .avatar { width: 40px; height: 40px; border-radius: 6px; background-size: cover; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.05); }
-        
         .message.user .avatar { display: none; }
         .bubble-content { max-width: 85%; display: flex; flex-direction: column; min-width: 0; }
         
@@ -59,13 +56,11 @@
         .actions.show { opacity: 1; }
         .message.user .actions { display: none; }
         .act-btn { cursor: pointer; display: flex; align-items: center; gap: 3px; transition: color 0.2s; }
-        .act-btn:hover { color: var(--text); }
-        .act-btn.active-like { color: #07C160 !important; font-weight: bold; }
-        .act-btn.active-dislike { color: #666 !important; font-weight: bold; }
+        .act-btn:hover { color: var(--primary); }
 
-        /* 5. 底部输入区 (增高) */
+        /* 5. 底部输入区 */
         .footer { background: var(--white); border-top: 1px solid var(--border); padding: 10px 15px; padding-bottom: calc(10px + env(safe-area-inset-bottom)); display: flex; align-items: flex-end; gap: 10px; flex-shrink: 0; z-index: 20; }
-        /* 核心修改：min-height 增加到 60px */
+        /* 核心优化：增高 + 手机滚动修复 */
         .input-box { flex: 1; min-height: 60px; max-height: 140px; padding: 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 16px; outline: none; background: var(--bg); color: var(--text); resize: none; overflow-y: auto; line-height: 1.5; font-family: inherit; touch-action: pan-y; }
         .send-btn { width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; margin-bottom: 10px; }
 
@@ -78,9 +73,12 @@
         .btn-new-chat { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 6px; font-size: 15px; cursor: pointer; background: transparent; border: 1px solid var(--primary); color: var(--primary); }
         .btn-help { display: flex; align-items: center; justify-content: center; gap: 5px; width: 100%; padding: 8px; border-radius: 6px; font-size: 13px; cursor: pointer; background: transparent; border: none; color: var(--text-sub); }
         .history-list { flex: 1; overflow-y: auto; padding: 10px; }
+        
+        /* 侧边栏高亮优化 */
         .history-item { padding: 12px; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--text); display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s; }
         .history-item.active { background-color: rgba(7, 193, 96, 0.1); border-left: 4px solid var(--primary); color: var(--primary); font-weight: bold; }
         .history-actions i { padding: 8px; color: var(--text-sub); cursor: pointer; margin-left: 10px; }
+        
         .sidebar-footer { padding: 20px; border-top: 1px solid var(--border); color: var(--text-sub); font-size: 12px; }
         .footer-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .clear-cache-row { display: flex; justify-content: center; align-items: center; margin-bottom: 10px; cursor: pointer; text-decoration: underline; }
@@ -118,28 +116,29 @@
 
     <div class="header">
         <div class="header-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
+        <!-- 标题同步 ID -->
         <div class="header-title" id="header-title" data-i18n="header_title_new">新会话</div>
         <div class="header-btn" onclick="toggleConfig()"><i class="fas fa-cog"></i></div>
     </div>
 
-    <!-- 配置面板 -->
+    <!-- 配置面板 (新增商业模式) -->
     <div class="config-panel" id="config-panel">
         <div class="form-group" style="border-bottom: 1px dashed var(--border); padding-bottom: 15px; margin-bottom: 15px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                 <label style="color: var(--primary); font-weight: bold; font-size: 14px; margin-bottom: 0;" data-i18n="label_mode">🛠️ 功能模式</label>
                 <div class="lang-switch" onclick="toggleLanguage()">中/En</div>
             </div>
-            <!-- 核心修改：动态更新标签的事件 -->
+            <!-- 核心：添加商业教练选项 -->
             <select id="task_mode" class="form-control" style="font-weight: bold;" onchange="updateUIByMode()">
                 <option value="个案督导" data-i18n="opt_supervisor">🎓 个案督导 (分析案例)</option>
                 <option value="咨询陪练" data-i18n="opt_simulation">🎭 咨询陪练 (AI扮演来访者)</option>
-                <option value="商业陪练" data-i18n="opt_business">💰 商业陪练 (创业/获客指导)</option>
+                <option value="商业教练" data-i18n="opt_business">💰 商业教练 (创业/获客指导)</option>
             </select>
         </div>
         
         <div class="form-group">
             <label data-i18n="label_auth">授权码</label>
-            <input type="text" id="auth_code" class="form-control" placeholder="请输入您的VIP授权码" data-i18n-ph="ph_auth">
+            <input type="text" id="auth_code" class="form-control" placeholder="请输入您的授权码" data-i18n-ph="ph_auth">
         </div>
         <div class="form-group">
             <label data-i18n="label_id">绑定账号 (QQ 或 手机号)</label>
@@ -147,6 +146,7 @@
         </div>
         
         <div class="form-group">
+            <!-- 动态标签 ID -->
             <label id="label_school" data-i18n="label_school">流派</label>
             <select id="school" class="form-control">
                 <option value="精神分析" data-i18n="sch_psycho">精神分析</option>
@@ -158,7 +158,7 @@
             </select>
         </div>
         <div class="form-group">
-            <!-- 核心修改：Label 增加了 ID，用于动态修改 -->
+            <!-- 动态标签 ID -->
             <label id="label_master" data-i18n="label_master">大师风格 (选填)</label>
             <input type="text" id="master_style" class="form-control" placeholder="请输入大师名字 (选填)" data-i18n-ph="ph_master">
         </div>
@@ -192,6 +192,7 @@
 
     <div class="chat-area" id="chat-box">
         <div class="message ai">
+            <!-- 动态头像 -->
             <div class="avatar" id="ai-avatar"></div>
             <div class="bubble-content">
                 <div class="bubble" data-i18n="msg_welcome">您好！我是您的AI心理助手。<br><br>请点击右上角 ⚙️ 选择模式并完善信息。</div>
@@ -212,7 +213,7 @@
         <h3 data-i18n="help_title">📚 使用指南</h3>
         <br>
         <div id="help-content-zh">
-            <p><strong>1. 模式切换</strong><br>右上角设置中选择“个案督导”、“咨询陪练”或“商业陪练”。</p>
+            <p><strong>1. 模式切换</strong><br>右上角设置中选择“个案督导”、“咨询陪练”或“商业教练”。</p>
             <p><strong>2. 绑定鉴权</strong><br>输入授权码和号码，系统自动验证有效期和次数。</p>
             <p><strong>3. 发送案例</strong><br>粘贴逐字稿，错别字也不影响，30秒即可获取专业分析。</p>
         </div>
@@ -223,6 +224,7 @@
     </div>
 </div>
 
+<!-- 广告弹窗 -->
 <div class="modal" id="ad-modal">
     <div class="modal-content" style="text-align: center; max-width: 90%;">
         <span class="close-modal" onclick="closeModal('ad-modal')">&times;</span>
@@ -235,19 +237,19 @@
 
 <script>
     const WORKER_URL = 'https://dudao.huaged.com'; 
-    // ★★★ 核心修改：自定义头像 (灵动真诚的女性动漫/插画风格) ★★★
+    // ★★★ 核心修改：自定义头像 (灵动真诚的女性动漫风格) ★★★
     const AI_AVATAR_URL = 'https://cdn-icons-png.flaticon.com/512/3220/3220315.png'; 
     
-    // --- 国际化配置 (含动态 Label) ---
+    // --- 国际化配置 (含商业版) ---
     const i18n = {
         zh: {
             header_title_new: "新会话", label_mode: "🛠️ 功能模式", 
-            opt_supervisor: "🎓 个案督导 (分析案例)", opt_simulation: "🎭 咨询陪练 (AI扮演来访者)", opt_business: "💰 商业陪练 (创业/获客指导)",
+            opt_supervisor: "🎓 个案督导 (分析案例)", opt_simulation: "🎭 咨询陪练 (AI扮演来访者)", opt_business: "💰 商业教练 (创业/获客指导)",
             label_auth: "授权码", ph_auth: "请输入您的授权码", label_id: "绑定账号 (QQ 或 手机号)", ph_id: "请输入您的绑定号码",
             label_school: "流派", sch_psycho: "精神分析", sch_human: "人本主义", sch_cbt: "认知行为 (CBT)", sch_lacan: "拉康学派", sch_post: "后现代", sch_none: "不分流派",
             label_master: "督导大师人格（选填）", ph_master: "例如：弗洛伊德", 
             label_hours: "从业小时数",
-            // ★★★ 新增动态 Label ★★★
+            // ★★★ 动态标签 ★★★
             lbl_sim_school: "咨询流派", lbl_sim_master: "来访者症状类型 (如：焦虑、抑郁)",
             lbl_bus_school: "咨询流派", lbl_bus_master: "商业导师风格 (如：乔布斯、狼性)",
             
@@ -256,7 +258,7 @@
             ph_input_sup: "个案信息或对督导的要求(1万字内)", ph_input_sim: "你好，我是咨询师...", ph_input_bus: "我想问关于获客的问题...",
             guide_sup: "🎓 **已切换至【个案督导】模式**<br>请直接粘贴您的咨询逐字稿或输入您的困惑。",
             guide_sim: "🎭 **已切换至【咨询陪练】模式**<br>AI 将扮演来访者。请您输入第一句开场白。",
-            guide_bus: "💰 **已切换至【商业陪练】模式**<br>请问您在创业或咨询获客中遇到了什么问题？",
+            guide_bus: "💰 **已切换至【商业教练】模式**<br>请问您在创业或咨询获客中遇到了什么问题？",
             tip_voice: "<br><br><span class='highlight-tip'>💡 小技巧：使用手机【语音转文字】，输入效率更高！</span>", tip_voice_en: "<br><br><span class='highlight-tip'>💡 Tip: Use Voice-to-Text for efficiency!</span>",
             btn_copy: "复制", btn_copied: "已复制", help_title: "📚 使用指南", btn_got_it: "我知道了"
         },
@@ -292,7 +294,7 @@
         const input = document.getElementById('user_input');
         input.addEventListener('input', function() { this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px'; });
         input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey && window.innerWidth > 768) { e.preventDefault(); sendMessage(); } });
-        // 初始化界面文案
+        // 初始化动态界面
         updateUIByMode();
     });
 
@@ -300,7 +302,7 @@
         curLang = curLang === 'zh' ? 'en' : 'zh';
         localStorage.setItem('lang', curLang);
         applyLanguage(curLang);
-        updateUIByMode(); // 切换语言时也要刷新 Label
+        updateUIByMode(); // 语言切换时刷新Label
     }
 
     function applyLanguage(lang) {
@@ -317,7 +319,7 @@
         document.getElementById('help-content-en').style.display = lang === 'en' ? 'block' : 'none';
     }
 
-    // ★★★ 核心修改：统一更新 UI (Placeholder + Label) ★★★
+    // ★★★ 核心：根据模式动态更新 Label 和 Placeholder ★★★
     function updateUIByMode() {
         const mode = document.getElementById('task_mode').value;
         const input = document.getElementById('user_input');
@@ -329,7 +331,7 @@
             input.placeholder = dict.ph_input_sim;
             lblSchool.innerText = dict.lbl_sim_school;
             lblMaster.innerText = dict.lbl_sim_master;
-        } else if (mode === '商业陪练' || mode === 'business') {
+        } else if (mode === '商业教练' || mode === 'business') {
             input.placeholder = dict.ph_input_bus;
             lblSchool.innerText = dict.lbl_bus_school;
             lblMaster.innerText = dict.lbl_bus_master;
@@ -340,7 +342,7 @@
         }
     }
     
-    // 兼容旧的 updatePlaceholder 调用
+    // 兼容旧接口
     function updatePlaceholder() { updateUIByMode(); }
 
     function toggleSidebar() { closeConfig(); document.getElementById('sidebar').classList.toggle('show'); document.getElementById('overlay').classList.toggle('show'); }
@@ -356,6 +358,9 @@
     function closeConfig() { document.getElementById('config-panel').classList.remove('show'); }
 
     function checkAd() { if (!AD_CONFIG.enable) return; const viewed = localStorage.getItem('ad_viewed_id'); if (AD_CONFIG.showOnce && viewed === AD_CONFIG.id) return; document.getElementById('ad-title').innerText = AD_CONFIG.title; document.getElementById('ad-text').innerHTML = AD_CONFIG.text; if (AD_CONFIG.imageUrl) { const img = document.getElementById('ad-image'); img.src = AD_CONFIG.imageUrl; img.style.display = 'block'; } document.getElementById('ad-modal').style.display = 'flex'; if (AD_CONFIG.showOnce) localStorage.setItem('ad_viewed_id', AD_CONFIG.id); }
+    
+    function showModal(id) { closeAll(); document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     
     function confirmConfig() {
         const auth = document.getElementById('auth_code').value.trim();
@@ -375,15 +380,18 @@
         const commonTip = curLang === 'zh' ? dict.tip_voice : dict.tip_voice_en;
 
         if (mode === '咨询陪练' || mode === 'simulation') {
-            guideText = dict.guide_sim + commonTip;
             document.getElementById('header-title').innerText = curLang === 'zh' ? "咨询陪练" : "Roleplay";
-        } else if (mode === '商业陪练' || mode === 'business') {
+            guideText = dict.guide_sim + commonTip;
+        } else if (mode === '商业教练' || mode === 'business') {
+            document.getElementById('header-title').innerText = curLang === 'zh' ? "商业教练" : "Business";
             guideText = dict.guide_bus + commonTip;
-            document.getElementById('header-title').innerText = curLang === 'zh' ? "商业陪练" : "Business";
         } else {
-            guideText = dict.guide_sup + commonTip;
             document.getElementById('header-title').innerText = curLang === 'zh' ? "个案督导" : "Supervision";
+            guideText = dict.guide_sup + commonTip;
         }
+        
+        // 更新 UI 状态
+        updateUIByMode();
 
         const box = document.getElementById('chat-box');
         const div = document.createElement('div');
@@ -468,6 +476,7 @@
         div.className = `message ${role}`;
         const avatar = role === 'ai' ? `<div class="avatar" style="background-image: url('${AI_AVATAR_URL}')"></div>` : '';
         
+        // 只有复制功能
         let actions = '';
         const dict = i18n[curLang];
         if (role === 'ai' && msgId) {
@@ -499,8 +508,7 @@
                 setTimeout(type, interval);
             } else {
                 element.innerHTML = marked.parse(text);
-                const actDiv = document.getElementById(`actions-${msgId}`);
-                if (actDiv) actDiv.classList.add('show');
+                const actDiv = document.getElementById(`actions-${msgId}`); if(actDiv) actDiv.classList.add('show');
             }
         }
         type();
@@ -521,7 +529,7 @@
     function startNewChat() { 
         currentConvId = ""; 
         const mode = document.getElementById('task_mode').value;
-        const titleDict = { '个案督导': '个案督导', '咨询陪练': '咨询陪练', '商业陪练': '商业陪练', 'supervisor': 'Supervision', 'simulation': 'Roleplay', 'business': 'Business' };
+        const titleDict = { '个案督导': '个案督导', '咨询陪练': '咨询陪练', '商业教练': '商业教练' };
         const title = titleDict[mode] || '新会话';
         document.getElementById('header-title').innerText = title;
         document.getElementById('chat-box').innerHTML = `<div class="message ai"><div class="avatar" style="background-image: url('${AI_AVATAR_URL}')"></div><div class="bubble-content"><div class="bubble" data-i18n="msg_welcome">${i18n[curLang].msg_welcome}</div></div></div>`; 
@@ -530,21 +538,19 @@
 
     function updateChatList(id, firstMsg) { const title = firstMsg.substring(0, 10) + "..."; if (!chatList.find(c => c.id === id)) { chatList.unshift({ id: id, title: title }); localStorage.setItem('supervisor_chat_list', JSON.stringify(chatList)); renderHistory(); } }
     
-    // ★★★ 核心修复：淡入动画 + 标题同步 + 侧边栏高亮 ★★★
+    // ★★★ 核心修复：切换对话时，淡入 + 标题同步 ★★★
     function loadChat(id) { 
         currentConvId = id; 
-        
-        // 1. 关闭侧边栏
         closeAll();
-
-        // 2. 延迟显示 (制造切换感)
+        
+        // 淡入动画
         const chatArea = document.querySelector('.chat-area');
-        chatArea.classList.add('fading'); // 先隐藏
+        chatArea.classList.add('fading'); 
 
         setTimeout(() => {
             const chat = chatList.find(c => c.id === id);
             const savedMode = localStorage.getItem(`sup_mode_${id}`) || document.getElementById('task_mode').value;
-            // 处理历史记录的模式显示 (简化版)
+            // 标题格式：模式 - 客户名
             const modeName = savedMode.includes('陪练') ? '陪练' : (savedMode.includes('商业') ? '商业' : '督导');
             if (chat) document.getElementById('header-title').innerText = `${modeName} - ${chat.title}`;
             
@@ -552,11 +558,9 @@
             document.getElementById('chat-box').innerHTML = ''; 
             msgs.forEach(m => appendMessage(m.role, m.content, m.msgId)); 
             
-            renderHistory(); // 刷新高亮
-            
-            // 3. 显示
+            renderHistory(); 
             chatArea.classList.remove('fading');
-        }, 300); // 0.3秒延迟，配合侧边栏收起动画
+        }, 400); // 400ms 延迟，慢于侧边栏收起(300ms)
     }
 
     function renderHistory() { 
@@ -600,7 +604,6 @@
     }
     function clearCache() { if(confirm("Clear All Cache?")) { localStorage.clear(); location.reload(); } }
     
-    // 复制功能升级：显示“已复制”反馈
     function copyText(btn, text) { 
         const t = document.createElement("textarea"); t.value = text; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t); 
         const original = btn.innerHTML;
@@ -612,3 +615,4 @@
 
 </body>
 </html>
+
