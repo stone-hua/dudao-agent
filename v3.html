@@ -128,7 +128,7 @@
                 <label style="color: var(--primary); font-weight: bold; font-size: 14px; margin-bottom: 0;" data-i18n="label_mode">🛠️ 功能模式</label>
                 <div class="lang-switch" onclick="toggleLanguage()">中/En</div>
             </div>
-            <!-- 核心：添加商业陪练选项 -->
+            <!-- 核心：添加商业教练选项 -->
             <select id="task_mode" class="form-control" style="font-weight: bold;" onchange="updateUIByMode()">
                 <option value="个案督导" data-i18n="opt_supervisor">🎓 个案督导 (分析案例)</option>
                 <option value="咨询陪练" data-i18n="opt_simulation">🎭 咨询陪练 (AI扮演来访者)</option>
@@ -213,7 +213,7 @@
         <h3 data-i18n="help_title">📚 使用指南</h3>
         <br>
         <div id="help-content-zh">
-            <p><strong>1. 模式切换</strong><br>右上角设置中选择“个案督导”、“咨询陪练”或“商业陪练”。</p>
+            <p><strong>1. 模式切换</strong><br>右上角设置中选择“个案督导”、“咨询陪练”或“商业教练”。</p>
             <p><strong>2. 绑定鉴权</strong><br>输入授权码和号码，系统自动验证有效期和次数。</p>
             <p><strong>3. 发送案例</strong><br>粘贴逐字稿，错别字也不影响，30秒即可获取专业分析。</p>
         </div>
@@ -331,7 +331,7 @@
             input.placeholder = dict.ph_input_sim;
             lblSchool.innerText = dict.lbl_sim_school;
             lblMaster.innerText = dict.lbl_sim_master;
-        } else if (mode === '商业陪练' || mode === 'business') {
+        } else if (mode === '商业教练' || mode === 'business') {
             input.placeholder = dict.ph_input_bus;
             lblSchool.innerText = dict.lbl_bus_school;
             lblMaster.innerText = dict.lbl_bus_master;
@@ -382,8 +382,8 @@
         if (mode === '咨询陪练' || mode === 'simulation') {
             document.getElementById('header-title').innerText = curLang === 'zh' ? "咨询陪练" : "Roleplay";
             guideText = dict.guide_sim + commonTip;
-        } else if (mode === '商业陪练' || mode === 'business') {
-            document.getElementById('header-title').innerText = curLang === 'zh' ? "商业陪练" : "Business";
+        } else if (mode === '商业教练' || mode === 'business') {
+            document.getElementById('header-title').innerText = curLang === 'zh' ? "商业教练" : "Business";
             guideText = dict.guide_bus + commonTip;
         } else {
             document.getElementById('header-title').innerText = curLang === 'zh' ? "个案督导" : "Supervision";
@@ -529,7 +529,7 @@
     function startNewChat() { 
         currentConvId = ""; 
         const mode = document.getElementById('task_mode').value;
-        const titleDict = { '个案督导': '个案督导', '咨询陪练': '咨询陪练', '商业陪练': '商业陪练' };
+        const titleDict = { '个案督导': '个案督导', '咨询陪练': '咨询陪练', '商业教练': '商业教练' };
         const title = titleDict[mode] || '新会话';
         document.getElementById('header-title').innerText = title;
         document.getElementById('chat-box').innerHTML = `<div class="message ai"><div class="avatar" style="background-image: url('${AI_AVATAR_URL}')"></div><div class="bubble-content"><div class="bubble" data-i18n="msg_welcome">${i18n[curLang].msg_welcome}</div></div></div>`; 
@@ -615,3 +615,4 @@
 
 </body>
 </html>
+
