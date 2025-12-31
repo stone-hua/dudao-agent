@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AI心理督导大师</title>
+    <title>AI心理督导大师-张兆华工作室</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -130,9 +130,9 @@
             </div>
             <!-- 核心：添加商业教练选项 -->
             <select id="task_mode" class="form-control" style="font-weight: bold;" onchange="updateUIByMode()">
-                <option value="个案督导" data-i18n="opt_supervisor">🎓 个案督导 (分析案例)</option>
+                <option value="个案督导" data-i18n="opt_supervisor">🎓 个案督导 (大师分析案例)</option>
                 <option value="咨询陪练" data-i18n="opt_simulation">🎭 咨询陪练 (AI扮演来访者)</option>
-                <option value="商业教练" data-i18n="opt_business">💰 商业教练 (创业/获客指导)</option>
+                <option value="商业教练" data-i18n="opt_business">💰 商业教练 (创业/获客/流量指导)</option>
             </select>
         </div>
         
@@ -142,7 +142,7 @@
         </div>
         <div class="form-group">
             <label data-i18n="label_id">绑定账号 (QQ 或 手机号)</label>
-            <input type="text" id="phone_number" class="form-control" placeholder="请输入您的唯一绑定ID" data-i18n-ph="ph_id">
+            <input type="text" id="phone_number" class="form-control" placeholder="请输入您的绑定号码" data-i18n-ph="ph_id">
         </div>
         
         <div class="form-group">
@@ -159,11 +159,11 @@
         </div>
         <div class="form-group">
             <!-- 动态标签 ID -->
-            <label id="label_master" data-i18n="label_master">大师风格 (选填)</label>
-            <input type="text" id="master_style" class="form-control" placeholder="请输入大师名字 (选填)" data-i18n-ph="ph_master">
+            <label id="label_master" data-i18n="label_master">督导人格 (选填)</label>
+            <input type="text" id="master_style" class="form-control" placeholder="例如：弗洛伊德" data-i18n-ph="ph_master">
         </div>
         <div class="form-group">
-            <label data-i18n="label_hours">从业时长</label>
+            <label data-i18n="label_hours">从业小时数</label>
             <input type="number" id="hours" class="form-control" placeholder="500" min="0">
         </div>
         <button class="btn-confirm" onclick="confirmConfig()" data-i18n="btn_save">保存设置，开始</button>
@@ -186,7 +186,7 @@
                 <i class="fas fa-moon" style="cursor:pointer; font-size:18px;" onclick="toggleTheme()"></i>
             </div>
             <div class="clear-cache-row" onclick="clearCache()" data-i18n="btn_clear">清空所有缓存</div>
-            <div style="text-align:center; margin-top:10px;">技术支持：张兆华工作室 huagelc</div>
+            <div style="text-align:center; margin-top:10px;">by：张兆华工作室 dahuazixun</div>
         </div>
     </div>
 
@@ -195,13 +195,13 @@
             <!-- 动态头像 -->
             <div class="avatar" id="ai-avatar"></div>
             <div class="bubble-content">
-                <div class="bubble" data-i18n="msg_welcome">您好！我是您的AI心理助手。<br><br>请点击右上角 ⚙️ 选择模式并完善信息。</div>
+                <div class="bubble" data-i18n="msg_welcome">您好！我是AI心理督导大师，内置无穷人格，没有评判防御，可按要求呈现，等您提出要求。<br><br>请点击右上角 ⚙️ 选择模式并完善信息。</div>
             </div>
         </div>
     </div>
 
     <div class="footer">
-        <textarea id="user_input" class="input-box" placeholder="粘贴个案逐字稿..." rows="1" maxlength="10000"></textarea>
+        <textarea id="user_input" class="input-box" placeholder="个案信息或督导需求...（1万字内）" rows="1" maxlength="10000"></textarea>
         <div class="send-btn" id="send_btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></div>
     </div>
 </div>
@@ -244,18 +244,18 @@
     const i18n = {
         zh: {
             header_title_new: "新会话", label_mode: "🛠️ 功能模式", 
-            opt_supervisor: "🎓 个案督导 (分析案例)", opt_simulation: "🎭 咨询陪练 (AI扮演来访者)", opt_business: "💰 商业教练 (创业/获客指导)",
+            opt_supervisor: "🎓 个案督导 (大师分析案例)", opt_simulation: "🎭 咨询陪练 (AI扮演来访者)", opt_business: "💰 商业教练 (创业/获客/流量指导)",
             label_auth: "授权码", ph_auth: "请输入您的授权码", label_id: "绑定账号 (QQ 或 手机号)", ph_id: "请输入您的绑定号码",
             label_school: "流派", sch_psycho: "精神分析", sch_human: "人本主义", sch_cbt: "认知行为 (CBT)", sch_lacan: "拉康学派", sch_post: "后现代", sch_none: "不分流派",
-            label_master: "督导大师人格（选填）", ph_master: "例如：弗洛伊德", 
+            label_master: "督导人格 (选填)", ph_master: "例如：弗洛伊德", 
             label_hours: "从业小时数",
             // ★★★ 动态标签 ★★★
             lbl_sim_school: "咨询流派", lbl_sim_master: "来访者症状类型 (如：焦虑、抑郁)",
             lbl_bus_school: "咨询流派", lbl_bus_master: "商业导师风格 (如：乔布斯、狼性)",
             
             btn_save: "保存设置，开始", btn_new_chat: "开启新咨询", btn_help: "使用说明", label_dark: "夜间模式", btn_clear: "清空所有对话缓存",
-            msg_welcome: "您好！我是AI心理大师，内置无穷人格，可按要求呈现。<br>请点击右上角 ⚙️ 选择模式并完善信息。",
-            ph_input_sup: "个案信息或对督导的要求(1万字内)", ph_input_sim: "你好，我是咨询师...", ph_input_bus: "我想问关于获客的问题...",
+            msg_welcome: "您好！我是AI心理督导大师，内置无穷人格，没有评判防御，可按要求呈现，等您提出要求。<br>请点击右上角 ⚙️ 选择模式并完善信息。",
+            ph_input_sup: "个案信息或督导需求...（1万字内）", ph_input_sim: "你好，我是咨询师...", ph_input_bus: "我想问关于获客的问题...",
             guide_sup: "🎓 **已切换至【个案督导】模式**<br>请直接粘贴您的咨询逐字稿或输入您的困惑。",
             guide_sim: "🎭 **已切换至【咨询陪练】模式**<br>AI 将扮演来访者。请您输入第一句开场白。",
             guide_bus: "💰 **已切换至【商业教练】模式**<br>请问您在创业或咨询获客中遇到了什么问题？",
