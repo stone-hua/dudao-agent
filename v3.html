@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AI心理督导大师-张兆华工作室</title>
+    <title>AI心理督导大师-张兆华工作室出品</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -130,7 +130,7 @@
             </div>
             <!-- 核心：添加商业教练选项 -->
             <select id="task_mode" class="form-control" style="font-weight: bold;" onchange="updateUIByMode()">
-                <option value="个案督导" data-i18n="opt_supervisor">🎓 个案督导 (大师分析案例)</option>
+                <option value="个案督导" data-i18n="opt_supervisor">🎓 个案督导 (大师分身分析案例)</option>
                 <option value="咨询陪练" data-i18n="opt_simulation">🎭 咨询陪练 (AI扮演来访者)</option>
                 <option value="商业教练" data-i18n="opt_business">💰 商业教练 (创业/获客/流量指导)</option>
             </select>
@@ -195,7 +195,7 @@
             <!-- 动态头像 -->
             <div class="avatar" id="ai-avatar"></div>
             <div class="bubble-content">
-                <div class="bubble" data-i18n="msg_welcome">您好！我是AI心理督导大师，内置无穷人格，没有评判防御，可按要求呈现，等您提出要求。<br><br>请点击右上角 ⚙️ 选择模式并完善信息。</div>
+                <div class="bubble" data-i18n="msg_welcome">您好！我是AI心理督导大师，内置无限人格，没有评判防御，可按要求呈现，您可以尽情提出要求。<br> <br>点击右上角 ⚙️ 选择模式，并完善信息后使用。</div>
             </div>
         </div>
     </div>
@@ -213,9 +213,11 @@
         <h3 data-i18n="help_title">📚 使用指南</h3>
         <br>
         <div id="help-content-zh">
-            <p><strong>1. 模式切换</strong><br>右上角设置中选择“个案督导”、“咨询陪练”或“商业教练”。</p>
-            <p><strong>2. 绑定鉴权</strong><br>输入授权码和号码，系统自动验证有效期和次数。</p>
-            <p><strong>3. 发送案例</strong><br>粘贴逐字稿，错别字也不影响，30秒即可获取专业分析。</p>
+            <p><strong>1. 模式切换</strong><br>右上角设置中选择“个案督导”、“咨询陪练”或”商业教练“。</p><br>
+            <p><strong>2. 发送案例</strong><br>长达1万字的报告或逐字稿，60秒内分析完毕，错别字也不影响结果。</p><br>
+            <p><strong>3. 多轮沟通</strong><br>您可以补充信息，和AI督导展开多轮沟通切磋。</p><br>
+            <p><strong>4. 咨询陪练</strong><br>模拟生动的咨询场景，并给咨询师的回应打分和建议。</p><br>
+            <p><strong>5. 自由表达</strong><br>您对AI有任何不满或需求，直接说给AI，它会立刻为您调整。</p><br>
         </div>
         <div id="help-content-en" style="display:none;">
             <p><strong>1. Switch Mode</strong><br>Select mode in settings.</p>
@@ -244,22 +246,25 @@
     const i18n = {
         zh: {
             header_title_new: "新会话", label_mode: "🛠️ 功能模式", 
-            opt_supervisor: "🎓 个案督导 (大师分析案例)", opt_simulation: "🎭 咨询陪练 (AI扮演来访者)", opt_business: "💰 商业教练 (创业/获客/流量指导)",
+            opt_supervisor: "🎓 个案督导 (大师分析拆解案例)", opt_simulation: "🎭 咨询陪练 (AI扮演来访者)", opt_business: "💰 商业教练 (创业/获客/流量指导)",
             label_auth: "授权码", ph_auth: "请输入您的授权码", label_id: "绑定账号 (QQ 或 手机号)", ph_id: "请输入您的绑定号码",
-            label_school: "流派", sch_psycho: "精神分析", sch_human: "人本主义", sch_cbt: "认知行为 (CBT)", sch_lacan: "拉康学派", sch_post: "后现代", sch_none: "不分流派",
+            label_school: "督导流派", sch_psycho: "精神分析", sch_human: "人本主义", sch_cbt: "认知行为 (CBT)", sch_lacan: "拉康学派", sch_post: "后现代", sch_none: "不分流派",
             label_master: "督导人格 (选填)", ph_master: "例如：弗洛伊德", 
             label_hours: "从业小时数",
             // ★★★ 动态标签 ★★★
-            lbl_sim_school: "咨询流派", lbl_sim_master: "来访者症状类型 (如：焦虑、抑郁)",
-            lbl_bus_school: "咨询流派", lbl_bus_master: "商业导师风格 (如：乔布斯、狼性)",
+            lbl_sim_school: "咨询流派", lbl_sim_master: "来访症状类型（选填）",
+            lbl_bus_school: "咨询流派", lbl_bus_master: "商业导师风格 (选填）",
+            // 找到 lbl_bus_master 这一行，在它后面补上下面两句：
+            ph_sim_master_text: "例如：重度抑郁、惊恐发作",
+            ph_bus_master_text: "例如：乔布斯、巴菲特",
             
             btn_save: "保存设置，开始", btn_new_chat: "开启新咨询", btn_help: "使用说明", label_dark: "夜间模式", btn_clear: "清空所有对话缓存",
-            msg_welcome: "您好！我是AI心理督导大师，内置无穷人格，没有评判防御，可按要求呈现，等您提出要求。<br>请点击右上角 ⚙️ 选择模式并完善信息。",
-            ph_input_sup: "个案信息或督导需求...（1万字内）", ph_input_sim: "你好，我是咨询师...", ph_input_bus: "我想问关于获客的问题...",
-            guide_sup: "🎓 **已切换至【个案督导】模式**<br>请直接粘贴您的咨询逐字稿或输入您的困惑。",
+            msg_welcome: "您好！我是AI心理督导大师，内置无限人格，没有评判防御，可按要求呈现，您可以尽情提出要求。<br><br>请点击右上角 ⚙️ 选择模式并完善信息。",
+            ph_input_sup: "个案信息或督导需求...（1万字内）", ph_input_sim: "你好，我是咨询师...", ph_input_bus: "我想问关于获客、成交的问题...",
+            guide_sup: "🎓 **已切换至【个案督导】模式**<br>请粘贴您的逐字稿 或 说出您的困扰。",
             guide_sim: "🎭 **已切换至【咨询陪练】模式**<br>AI 将扮演来访者。请您输入第一句开场白。",
-            guide_bus: "💰 **已切换至【商业教练】模式**<br>请问您在创业或咨询获客中遇到了什么问题？",
-            tip_voice: "<br><br><span class='highlight-tip'>💡 小技巧：使用手机【语音转文字】，输入效率更高！</span>", tip_voice_en: "<br><br><span class='highlight-tip'>💡 Tip: Use Voice-to-Text for efficiency!</span>",
+            guide_bus: "💰 **已切换至【商业教练】模式**<br>您在创业或咨询获客中，遇到了什么问题？",
+            tip_voice: "<br><br><span class='highlight-tip'>💡 小技巧：使用手机【语音转文字】，输入效率高5倍！</span>", tip_voice_en: "<br><br><span class='highlight-tip'>💡 Tip: Use Voice-to-Text for efficiency!</span>",
             btn_copy: "复制", btn_copied: "已复制", help_title: "📚 使用指南", btn_got_it: "我知道了"
         },
         en: {
@@ -271,6 +276,9 @@
             
             lbl_sim_school: "School", lbl_sim_master: "Client Symptom",
             lbl_bus_school: "School", lbl_bus_master: "Mentor Style",
+ // 找到 lbl_bus_master 这一行，在它后面补上下面两句：
+            ph_sim_master_text: "e.g. Anxiety, Depression",
+            ph_bus_master_text: "e.g. Steve Jobs, Elon Musk",
 
             btn_save: "Start", btn_new_chat: "New Session", btn_help: "Guide", label_dark: "Dark Mode", btn_clear: "Clear Cache",
             msg_welcome: "Hello! Setup to start.<br><br>Click top-right ⚙️", 
@@ -322,7 +330,9 @@
     // ★★★ 核心：根据模式动态更新 Label 和 Placeholder ★★★
     function updateUIByMode() {
         const mode = document.getElementById('task_mode').value;
-        const input = document.getElementById('user_input');
+        const input = document.getElementById('user_input');       // 底部聊天框
+        const inputMaster = document.getElementById('master_style'); // ★ 新增：找到大师风格输入框
+        
         const lblSchool = document.getElementById('label_school');
         const lblMaster = document.getElementById('label_master');
         const dict = i18n[curLang];
@@ -331,14 +341,20 @@
             input.placeholder = dict.ph_input_sim;
             lblSchool.innerText = dict.lbl_sim_school;
             lblMaster.innerText = dict.lbl_sim_master;
+            inputMaster.placeholder = dict.ph_sim_master_text; // ★ 新增：切换陪练模式的框内提示
+            
         } else if (mode === '商业教练' || mode === 'business') {
             input.placeholder = dict.ph_input_bus;
             lblSchool.innerText = dict.lbl_bus_school;
             lblMaster.innerText = dict.lbl_bus_master;
+            inputMaster.placeholder = dict.ph_bus_master_text; // ★ 新增：切换商业模式的框内提示
+
         } else {
+            // 默认模式（个案督导）
             input.placeholder = dict.ph_input_sup;
             lblSchool.innerText = dict.label_school;
             lblMaster.innerText = dict.label_master;
+            inputMaster.placeholder = dict.ph_master; // ★ 恢复默认提示（例如：弗洛伊德）
         }
     }
     
@@ -636,4 +652,3 @@
 
 </body>
 </html>
-
