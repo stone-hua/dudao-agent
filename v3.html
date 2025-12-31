@@ -130,7 +130,7 @@
             </div>
             <!-- 核心：添加商业教练选项 -->
             <select id="task_mode" class="form-control" style="font-weight: bold;" onchange="updateUIByMode()">
-                <option value="个案督导" data-i18n="opt_supervisor">🎓 个案督导 (大师分身分析案例)</option>
+                <option value="个案督导" data-i18n="opt_supervisor">🎓 个案督导 (大师分析案例)</option>
                 <option value="咨询陪练" data-i18n="opt_simulation">🎭 咨询陪练 (AI扮演来访者)</option>
                 <option value="商业教练" data-i18n="opt_business">💰 商业教练 (创业/获客/流量指导)</option>
             </select>
@@ -159,12 +159,12 @@
         </div>
         <div class="form-group">
             <!-- 动态标签 ID -->
-            <label id="label_master" data-i18n="label_master">督导人格 (选填)</label>
+            <label id="label_master" data-i18n="label_master">督导分身人格 (选填)</label>
             <input type="text" id="master_style" class="form-control" placeholder="例如：弗洛伊德" data-i18n-ph="ph_master">
         </div>
         <div class="form-group">
             <label data-i18n="label_hours">从业小时数</label>
-            <input type="number" id="hours" class="form-control" placeholder="500" min="0">
+            <input type="number" id="hours" class="form-control" placeholder="200" min="0">
         </div>
         <button class="btn-confirm" onclick="confirmConfig()" data-i18n="btn_save">保存设置，开始</button>
     </div>
@@ -246,10 +246,10 @@
     const i18n = {
         zh: {
             header_title_new: "新会话", label_mode: "🛠️ 功能模式", 
-            opt_supervisor: "🎓 个案督导 (大师分析拆解案例)", opt_simulation: "🎭 咨询陪练 (AI扮演来访者)", opt_business: "💰 商业教练 (创业/获客/流量指导)",
+            opt_supervisor: "🎓 个案督导 (大师分析案例)", opt_simulation: "🎭 咨询陪练 (AI扮演来访者)", opt_business: "💰 商业教练 (创业/获客/流量指导)",
             label_auth: "授权码", ph_auth: "请输入您的授权码", label_id: "绑定账号 (QQ 或 手机号)", ph_id: "请输入您的绑定号码",
             label_school: "督导流派", sch_psycho: "精神分析", sch_human: "人本主义", sch_cbt: "认知行为 (CBT)", sch_lacan: "拉康学派", sch_post: "后现代", sch_none: "不分流派",
-            label_master: "督导人格 (选填)", ph_master: "例如：弗洛伊德", 
+            label_master: "督导分身人格 (选填)", ph_master: "例如：弗洛伊德", 
             label_hours: "从业小时数",
             // ★★★ 动态标签 ★★★
             lbl_sim_school: "咨询流派", lbl_sim_master: "来访症状类型（选填）",
