@@ -378,14 +378,23 @@
     function showModal(id) { closeAll(); document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     
-    function confirmConfig() {
+function confirmConfig() {
         const auth = document.getElementById('auth_code').value.trim();
         const phone = document.getElementById('phone_number').value.trim();
-        const hoursInput = document.getElementById('hours').value;
+        const hoursInput = document.getElementById('hours').value; // 获取原始值
         const hours = Number(hoursInput);
 
-        if (!auth || !phone) { alert(curLang === 'zh' ? "请完善授权码和绑定ID！" : "Please complete info!"); return; }
-        if (hoursInput !== "" && (isNaN(hours) || hours < 0)) { alert(curLang === 'zh' ? "从业时长必须是有效的正数！" : "Hours must be a positive number!"); return; }
+        // ★★★ 修改点 1：把 hoursInput === "" 加进去，变成必填项
+        if (!auth || !phone || hoursInput === "") { 
+            alert(curLang === 'zh' ? "请完善授权码、绑定账号 和 从业时长！" : "Please complete Auth, ID and Hours!"); 
+            return; 
+        }
+
+        // ★★★ 修改点 2：严格校验必须是正整数
+        if (isNaN(hours) || hours < 0) { 
+            alert(curLang === 'zh' ? "从业时长必须是数字！" : "Hours must be a positive number!"); 
+            return; 
+        }
 
         saveConfig(); closeAll();
 
