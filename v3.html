@@ -239,7 +239,8 @@
 
 <script>
     const WORKER_URL = 'https://dudao.huaged.com'; 
-     
+         // ★★★ 新增这一行，填入刚才谷歌给你的长链接 ★★★
+    const LOG_URL = 'https://script.google.com/macros/s/AKfycbwBFUY0QqaVZZg84je-GzNugNH_1MBhiPysVY4ccQWykTkGgBMTjyZ5bbb34A46_1DX/exec';
     const AI_AVATAR_URL = './avatar.png'; 
     
      
@@ -494,6 +495,29 @@ function confirmConfig() {
             
             if (data.answer && data.answer.trim() !== "") {
                 appendMessage('ai', data.answer, data.message_id, true);
+ 
+ 
+                let deviceId = localStorage.getItem('site_device_id');
+                if (!deviceId) {
+                    deviceId = 'dev-' + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem('site_device_id', deviceId);
+                }
+
+ 
+                fetch(LOG_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',  
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        action: "log",
+                        phone: phone,  
+                        auth: auth,    
+                        query: text,   
+                        answer: data.answer,  
+                        device_id: deviceId
+                    })
+                }).catch(err => console.error("Log failed:", err)); 
+  
             } else if (data.status === "blocked") {
                 appendMessage('ai', data.answer || "⛔ 请求被拒绝");
             }
@@ -656,10 +680,22 @@ function confirmConfig() {
         const copiedText = (typeof i18n !== 'undefined' && i18n[curLang]) ? i18n[curLang].btn_copied : "已复制";
         btn.innerHTML = `<i class="fas fa-check"></i> ${copiedText}`; 
         setTimeout(() => btn.innerHTML = original, 2000); 
+ 
+        const deviceId = localStorage.getItem('site_device_id');
+        if (deviceId) {
+             fetch(LOG_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    action: "copy",
+                    device_id: deviceId
+                })
+            }).catch(e => {});  
+        }
+ 
     }
 </script>
 
 </body>
 </html>
-
-
