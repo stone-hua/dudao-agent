@@ -507,7 +507,7 @@ function confirmConfig() {
                 fetch(LOG_URL, {
                     method: 'POST',
                     mode: 'no-cors',  
-                    headers: {'Content-Type': 'application/json'},
+                        headers: {'Content-Type': 'text/plain;charset=utf-8'},
                     body: JSON.stringify({
                         action: "log",
                         phone: phone,  
@@ -686,7 +686,7 @@ function confirmConfig() {
              fetch(LOG_URL, {
                 method: 'POST',
                 mode: 'no-cors',
-                headers: {'Content-Type': 'application/json'},
+                    headers: {'Content-Type': 'text/plain;charset=utf-8'},
                 body: JSON.stringify({
                     action: "copy",
                     device_id: deviceId
